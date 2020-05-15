@@ -3,6 +3,8 @@
 
 """
 from WAsheets import *
+from WAsheets.sheet1 import main as sheet1
+from WAsheets.sheet2 import main as sheet2
 
 BASIN={
        'name': 'Kanartaka',
@@ -44,6 +46,6 @@ BASIN={
         
        }
        
-
-
+sheet1(BASIN,unit_conversion=1000)
+sheet2(BASIN,unit_conversion=1000)
        
