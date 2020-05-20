@@ -19,6 +19,7 @@ from dateutil.relativedelta import relativedelta
 from . import GIS_functions as gis
 from . import calculate_flux as cf
 from . import get_dictionaries as gd
+from . import hydroloop as hl
 
 def main(BASIN,unit_conversion=1):
     '''
@@ -61,7 +62,7 @@ def main(BASIN,unit_conversion=1):
              BASIN['gis_data']['lu_map'], 
              BASIN['gis_data']['basin_mask'],
              chunksize=BASIN['chunksize'], 
-             output=output_file.format('Basin_SRO'), 
+             output=output_file.format('Basin_BF'), 
              lu_dictionary=lu_dict, #calc for LU cat
              quantity='volume')
     data['basin']['supply']=cf.calc_flux_per_basin(
@@ -69,79 +70,95 @@ def main(BASIN,unit_conversion=1):
              BASIN['gis_data']['lu_map'], 
              BASIN['gis_data']['basin_mask'],
              chunksize=BASIN['chunksize'], 
-             output=output_file.format('Basin_SRO'),
+             output=output_file.format('Basin_Supply'),
              quantity='volume')
     data['basin']['sroincr']=cf.calc_flux_per_basin(
              BASIN['data_cube']['sro_yearly'], 
              BASIN['gis_data']['lu_map'], 
              BASIN['gis_data']['basin_mask'],
              chunksize=BASIN['chunksize'], 
-             output=output_file.format('Basin_SRO'),
+             output=output_file.format('Basin_SROincr'),
              quantity='volume')
     data['basin']['percincr']=cf.calc_flux_per_basin(
              BASIN['data_cube']['sro_yearly'], 
              BASIN['gis_data']['lu_map'], 
              BASIN['gis_data']['basin_mask'],
              chunksize=BASIN['chunksize'], 
-             output=output_file.format('Basin_SRO'),
+             output=output_file.format('Basin_PERCincr'),
              quantity='volume')
  
     #Sub basins
     for ID in BASIN['gis_data']['subbasin_mask'].keys():
-        mask=BASIN['gis_data']['subbasin_mask'][ID]
         data[ID]=dict()
         data[ID]['sro']=cf.calc_flux_per_basin(
              BASIN['data_cube']['sro_yearly'], 
              BASIN['gis_data']['lu_map'], 
-             mask,
+             BASIN['gis_data']['subbasin_mask'][ID],
              chunksize=BASIN['chunksize'], 
-             output=output_file.format('Basin_SRO'), 
+             output=output_file.format(
+                     'Subbasin_{0}_SRO'.format(ID)), 
              lu_dictionary=lu_dict, #calc for LU cat
              quantity='volume')
         data[ID]['bf']=cf.calc_flux_per_basin(
              BASIN['data_cube']['sro_yearly'], 
              BASIN['gis_data']['lu_map'], 
-             mask,
+             BASIN['gis_data']['subbasin_mask'][ID],
              chunksize=BASIN['chunksize'], 
-             output=output_file.format('Basin_SRO'), 
+             output=output_file.format(
+                     'Subbasin_{0}_BF'.format(ID)),  
              lu_dictionary=lu_dict, #calc for LU cat
              quantity='volume')
         data[ID]['supply']=cf.calc_flux_per_basin(
              BASIN['data_cube']['sro_yearly'], 
              BASIN['gis_data']['lu_map'], 
-             BASIN['gis_data']['basin_mask'],
+             BASIN['gis_data']['subbasin_mask'][ID],
              chunksize=BASIN['chunksize'], 
-             output=output_file.format('Basin_SRO'),
+             output=output_file.format(
+                     'Subbasin_{0}_Supply'.format(ID)), 
              quantity='volume')
-        data['ID']['sroincr']=cf.calc_flux_per_basin(
+        data[ID]['sroincr']=cf.calc_flux_per_basin(
              BASIN['data_cube']['sro_yearly'], 
              BASIN['gis_data']['lu_map'], 
-             BASIN['gis_data']['basin_mask'],
+             BASIN['gis_data']['subbasin_mask'][ID],
              chunksize=BASIN['chunksize'], 
-             output=output_file.format('Basin_SRO'),
+             output=output_file.format(
+                     'Subbasin_{0}_SROincr'.format(ID)), 
              quantity='volume')
-        data['ID']['percincr']=cf.calc_flux_per_basin(
+        data[ID]['percincr']=cf.calc_flux_per_basin(
              BASIN['data_cube']['sro_yearly'], 
              BASIN['gis_data']['lu_map'], 
-             BASIN['gis_data']['basin_mask'],
+             BASIN['gis_data']['subbasin_mask'][ID],
              chunksize=BASIN['chunksize'], 
-             output=output_file.format('Basin_SRO'),
+             output=output_file.format(
+                     'Subbasin_{0}_PERCincr'.format(ID)), 
              quantity='volume')  
-    
- 
+    #connection between subbasin
+    dico_in = BASIN['param']['dico_in']
+    dico_out = BASIN['param']['dico_out']
     ### Fill data in Sheet 5 csv
-    for i in range(len(ET)):
-        year=ET.index[i]
-        results=dict()
-        results['ET']=np.array(
-                (ET.iloc[i].values/unit_conversion))                
+    for i in range(data['basin']['sro']):
+        year=data['basin']['sro'].index[i]
+        results=Vividict()
+        for subbasin in data.keys():
+            for j in len(lu_dict.keys()):
+                results['surf_runoff'][subbasin][lu_dict.keys()[j]]=\
+                data[subbasin]['sro'][data[subbasin]['sro'].columns[j]].values[i] 
+                results['base_runoff'][subbasin][lu_dict.keys()[j]]=\
+                data[subbasin]['bf'][data[subbasin]['bf'].columns[j]].values[i]
+            results['base_runoff'][subbasin]                 
+                
 
         #write sheet 5 csv
         output_fh=os.path.join(sheet_folder,'sheet5_{0}.csv'.format(year))
         create_sheet5_csv(year,results,output_fh)    
         
     return True
-        
+
+class Vividict(dict):
+    def __missing__(self, key):
+        value = self[key] = type(self)()
+        return value        
+
 def create_sheet5_csv(dresults, output_fh):
     """
     Create the csv-file for sheet 5.
@@ -173,11 +190,12 @@ def create_sheet5_csv(dresults, output_fh):
         writer.writerow([sb, 'Return Flow GW', '{0}'.format(dresults['return_gw_sw'][sb]), 'km3'])
         writer.writerow([sb, 'Total Return Flow', '{0}'.format(dresults['return_sw_sw'][sb]+dresults['return_gw_sw'][sb]), 'km3'])
         writer.writerow([sb, 'Outflow: Total', '{0}'.format(dresults['total_outflow'][sb]), 'km3'])
-        writer.writerow([sb, 'Outflow: Committed', '{0}'.format(dresults['committed_outflow'][sb]), 'km3'])
-        writer.writerow([sb, 'Outflow: Non Recoverable', '{0}'.format(dresults['non_recoverable_outflow'][sb]), 'km3'])
-        writer.writerow([sb, 'Outflow: Non Utilizable', '{0}'.format(dresults['non_utilizable_outflow'][sb]), 'km3'])
-        writer.writerow([sb, 'Outflow: Utilizable', '{0}'.format(dresults['utilizable_outflow'][sb]), 'km3'])
+        writer.writerow([sb, 'Outflow: Committed', 'nan', 'km3'])
+        writer.writerow([sb, 'Outflow: Non Recoverable', 'nan', 'km3'])
+        writer.writerow([sb, 'Outflow: Non Utilizable', 'nan', 'km3'])
+        writer.writerow([sb, 'Outflow: Utilizable', 'nan', 'km3'])
         writer.writerow([sb,'Interbasin Transfer','{0}'.format(dresults['interbasin_transfers'][sb]),'km3'])
         writer.writerow([sb, 'SW storage change', '{0}'.format(dresults['deltaS'][sb]), 'km3'])
     csv_file.close()
     return
+
