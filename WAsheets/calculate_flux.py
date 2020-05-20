@@ -61,7 +61,52 @@ def create_yearly_dataset(monthly_nc, output=None,
     
     return output
 
-def calc_flux_per_basin(dts_nc, basin_mask, chunksize=None,output=None):
+def resample_to_monthly_dataset(yearly_nc, sample_nc,
+                                start_month=0,
+                                output=None,
+                                chunksize=None):
+    '''
+    yearly_nc: a yearly dataset to resample to monthly
+    sample_nc: a monthly dataset to sample 'time' dimension
+    start_month: the index of start month. 
+        default start_month = 0 means yearly value resample from the first
+        month in sample_nc
+                
+    Resample a yearly netCDF dataset to monthly netCDF dataset
+    Where the value of each month is the same with the value of the year
+    '''
+    dts1=open_nc(yearly_nc,chunksize=chunksize,layer=0)
+    dts2=open_nc(sample_nc,chunksize=chunksize,layer=0)  
+   
+    for i in range(len(dts1.time)):
+        for t in range(i*12-start_month,i*12+12-start_month):
+            LU=dts1.isel(time=i)
+            if t==0:
+                dts=LU
+            else:
+                dts = xr.concat([dts, LU], dim='time')  
+    dts['time']=dts2['time']
+    #change coordinates order to [time,latitude,longitude]
+    dts=dts.transpose('time','latitude','longitude')               
+
+    dts.attrs=dts1.attrs
+    dts.name = dts1.name
+    
+    comp = dict(zlib=True, 
+                complevel=9, 
+                least_significant_digit=2, 
+                chunksizes=chunksize)
+    if output is None:
+        output=yearly_nc.replace('.nc','_resampled_monthly.nc')
+    encoding = {dts.name: comp}
+    dts.load().to_netcdf(output,encoding=encoding)
+    dts1.close()
+    dts2.close()
+    print('Save monthly LU datacube as {0}'.format(output))
+    return dts
+
+def calc_flux_per_basin(dts_nc, basin_mask, 
+                        chunksize=None,output=None,quantity='volume'):
     '''
     calculate flux per basin/sub-basin
     input_nc: str
@@ -71,6 +116,10 @@ def calc_flux_per_basin(dts_nc, basin_mask, chunksize=None,output=None):
             path to basin mask (GeoTIFF)
         np.array/xr.DataArray 
             pixel area of basin (in km2)
+            or mask of basin
+    quantity: str
+        'volume' OR 'depth'
+        
     output: str
         path to output (csv)
         default is None 
@@ -84,68 +133,21 @@ def calc_flux_per_basin(dts_nc, basin_mask, chunksize=None,output=None):
         basin=gis.OpenAsArray(basin_mask,nan_values=True)
         area_map=gis.MapPixelAreakm(basin_mask)
         area_mask=area_map*basin
-    else:
+    else: #basin_mask is 2D array
         area_mask=basin_mask
-    #calculate flux map
-    dts_m=dts*area_mask #flux = depth*area                
-    df=dts_m.sum(dim=['latitude','longitude']).to_dataframe() #export data
+    #calculate flux 
+    if quantity=='volume':
+        dts_m=dts*area_mask #flux = depth*area                
+        df=dts_m.sum(dim=['latitude','longitude']).to_dataframe() #export data
+    elif quantity=='depth':
+        dts_m=dts*basin_mask
+        df=dts_m.mean(dim=['latitude','longitude']).to_dataframe() #export data
     if output is not None:
         df.to_csv(output,sep=';') #save data as csv
         print('Save basin flux as {0}'.format(output))
     dts.close()
     return df
 
-
-def aggregate_by_lu_unique(dts,LU,how='sum'):
-    '''aggregate dataset by unique LU classes in LU map(s)
-    '''
-    unique_LU=np.unique(LU) #get unique landuse classes
-    unique_LU=unique_LU[~np.isnan(unique_LU)] #exclude nan
-    data=[] #create empty data list
-    for lucl in unique_LU: #agrregate total fluxes per each lu class
-        dts_lu=dts.where(LU==lucl,np.nan) #mask only lu class
-        if how=='sum':
-            df_lu=dts_lu.sum(dim=[
-                    'latitude',
-                    'longitude'
-                    ]).to_dataframe() #sum of all pixels in lu class
-        elif how=='mean':
-            df_lu=dts_lu.mean(dim=[
-                    'latitude',
-                    'longitude'
-                    ]).to_dataframe() #mean of all pixels in lu class          
-        df_lu=df_lu.drop(columns='time')        
-        df_lu.columns=['{0}-{1}'.format(lucl,
-                       col) for col in df_lu.columns] #rename column        
-
-        data.append(df_lu) #append data list by lu class
-    df=pd.concat(data, axis=1) #merge all results into 1 dataframe
-    return df
-
-def aggregate_by_lu_dictionary(dts,LU,lu_dictionary,how='sum'):
-    '''aggregate dataset by LU classes categories 
-    '''
-    data=[] #create empty data list
-    for key in lu_dictionary: #agrregate total fluxes per each lu class
-        classes=lu_dictionary[key]
-        dts_lu=dts.where(LU.isin(classes),np.nan) #mask only lu class
-        if how=='sum':
-            df_lu=dts_lu.sum(dim=[
-                    'latitude',
-                    'longitude'
-                    ]).to_dataframe() #sum of all pixels in lu class
-        elif how=='mean':
-            df_lu=dts_lu.mean(dim=[
-                    'latitude',
-                    'longitude'
-                    ]).to_dataframe() #mean of all pixels in lu class            
-        df_lu=df_lu.drop(columns='time')        
-        df_lu.columns=['{0}-{1}'.format(key,
-                       col) for col in df_lu.columns] #rename column
-        df_lu=df_lu.reset_index(drop=True, inplace=True)
-        data.append(df_lu) #append data list by lu class
-    df=pd.concat(data, axis=1) #merge all results into 1 dataframe
-    return df
 
 def calc_flux_per_LU_class(dts_nc, lu_nc, basin_mask,
                      chunksize=None, #option to process in chunks
@@ -216,41 +218,52 @@ def calc_flux_per_LU_class(dts_nc, lu_nc, basin_mask,
     dts.close()
     return df
 
-def check_requirement_sheet(BASIN,requirements,
-                             gis_data=True,
-                             data_cube=True,
-                             param=True): 
-    #check parameters requirements
-    if len(requirements['param']-BASIN['gis_data'].keys())>0:
-        print('Required parameters for Sheet {0} are missing: '.format(
-                requirements['sheet']))
-        print(requirements['gis_data']-BASIN['gis_data'].keys())
-        gis_data=False        
-    #check GIS data requirements
-    if len(requirements['gis_data']-BASIN['gis_data'].keys())>0:
-        print('Required GIS data for Sheet {0} are missing: '.format(
-                requirements['sheet']))
-        print(requirements['gis_data']-BASIN['gis_data'].keys())
-        gis_data=False
-    #check data cube requirements
-    if len(requirements['data_cube']-BASIN['data_cube'].keys())>0:
-        missing_data=list(requirements['data_cube']-BASIN['data_cube'].keys())
-        print('Required spatial data for Sheet {0} are missing: '.format(
-                requirements['sheet']))
-        print(missing_data)
-        for data in missing_data:            
-            if data.replace('yearly','monthly') in BASIN['data_cube'].keys():
-                print('Convert {0} from {1}'.format(data,
-                      data.replace('yearly','monthly')))
-                output=create_yearly_dataset(
-                        BASIN['data_cube'][data.replace('yearly',
-                                         'monthly')],
-                                        hydroyear=BASIN['hydroyear'],
-                                        chunksize=BASIN['chunksize']
-                                         )
-                BASIN['data_cube'][data]=output
-            else:
-                print('Missing mothly data to convert to {0}'.format(data))
-                data_cube=False
-    
-    return gis_data*data_cube*param
+def aggregate_by_lu_unique(dts,LU,how='sum'):
+    '''aggregate dataset by unique LU classes in LU map(s)
+    '''
+    unique_LU=np.unique(LU) #get unique landuse classes
+    unique_LU=unique_LU[~np.isnan(unique_LU)] #exclude nan
+    data=[] #create empty data list
+    for lucl in unique_LU: #agrregate total fluxes per each lu class
+        dts_lu=dts.where(LU==lucl,np.nan) #mask only lu class
+        if how=='sum':
+            df_lu=dts_lu.sum(dim=[
+                    'latitude',
+                    'longitude'
+                    ]).to_dataframe() #sum of all pixels in lu class
+        elif how=='mean':
+            df_lu=dts_lu.mean(dim=[
+                    'latitude',
+                    'longitude'
+                    ]).to_dataframe() #mean of all pixels in lu class          
+        df_lu=df_lu.drop(columns='time')        
+        df_lu.columns=['{0}-{1}'.format(lucl,
+                       col) for col in df_lu.columns] #rename column     
+        data.append(df_lu) #append data list by lu class
+    df=pd.concat(data, axis=1) #merge all results into 1 dataframe
+    return df
+
+def aggregate_by_lu_dictionary(dts,LU,lu_dictionary,how='sum'):
+    '''aggregate dataset by LU classes categories 
+    '''
+    data=[] #create empty data list
+    for key in lu_dictionary: #agrregate total fluxes per each lu class
+        classes=lu_dictionary[key]
+        dts_lu=dts.where(LU.isin(classes),np.nan) #mask only lu class
+        if how=='sum':
+            df_lu=dts_lu.sum(dim=[
+                    'latitude',
+                    'longitude'
+                    ]).to_dataframe() #sum of all pixels in lu class
+        elif how=='mean':
+            df_lu=dts_lu.mean(dim=[
+                    'latitude',
+                    'longitude'
+                    ]).to_dataframe() #mean of all pixels in lu class        
+        df_lu=df_lu.drop(columns='time')        
+        df_lu.columns=['{0}-{1}'.format(key,
+                       col) for col in df_lu.columns] #rename column
+        data.append(df_lu) #append data list by lu class
+    df=pd.concat(data, axis=1) #merge all results into 1 dataframe
+    return df
+
