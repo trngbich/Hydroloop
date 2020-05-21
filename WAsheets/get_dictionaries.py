@@ -437,7 +437,7 @@ def get_sheet4_6_fractions(version = '1.0'):
     'Irrigated crops':      9999,
     'Managed water bodies': 0.95,
     'Other':                0.50,
-    'Residential':          0.90,
+    'Residential':          0.90, 
     'Greenhouses':          0.50,
     'Aquaculture':          0.95} 
     

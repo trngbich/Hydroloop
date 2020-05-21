@@ -4,11 +4,7 @@ Created on Fri May 1 15:09:33 2020
 
 @author: ntr002
 
-Functions to calculate extra data needed for WA+ sheets from pixel-based model
-
-Input:
-    
-Output:
+Functions to calculate extra data needed for WA+ sheets from pixel-based model results (NetCDF dataset)
 
 """
 import os
@@ -28,9 +24,9 @@ from . import GIS_functions as gis
 def check_requirement_sheet(BASIN,requirements,
                              gis_data=True,
                              data_cube=True,
-                             param=True): 
+                             params=True): 
     #check parameters requirements
-    if len(requirements['param']-BASIN['gis_data'].keys())>0:
+    if len(requirements['params']-BASIN['gis_data'].keys())>0:
         print('Required parameters for Sheet {0} are missing: '.format(
                 requirements['sheet']))
         print(requirements['gis_data']-BASIN['gis_data'].keys())
@@ -62,15 +58,206 @@ def check_requirement_sheet(BASIN,requirements,
                 print('Missing mothly data to convert to {0}'.format(data))
                 data_cube=False
     
-    return gis_data*data_cube*param
+    return gis_data*data_cube*params
 #%% Sheet 2 functions
-def split_ETI(et_nc,lai_nc,output_folder):
+    
+def split_ETI(et_nc,i_nc=None,t_nc=None,
+              chunksize=None,**input_data):
     '''
     split actual evapotranspiration into 3 components
     Evaporation, Transpiration, and Interception
+    
+    '''
+    keys=input_data.keys()
+    #Interception
+    if i_nc is None:
+        #check input data        
+        list_rq=['p_nc','lai_nc','nrd_nc']
+        check=[item in keys for item in list_rq]
+        if not all(check): #not enough input_data
+            print('ERROR:Missing data to calculate interception')
+            print('p_nc: path to precipitation dataset')
+            print('lai_nc: path to LAI dataset')
+            print('nrd_nc: path to number of rainy days dataset')            
+            return None
+        else: #input_data is sufficient to calculate i
+            p_nc=input_data['p_nc']
+            lai_nc=input_data['lai_nc']
+            nrd_nc=input_data['nrd_nc']
+            i_nc=calc_interception(p_nc,lai_nc,nrd_nc,
+                              chunksize=chunksize)
+            input_data['i_nc']=i_nc
+            return
+    #Transpiration
+    if t_nc is None:
+        #check input data        
+        list_rq=['et_nc','i_nc','ndm_nc']
+        check=[item in keys for item in list_rq]
+        if not all(check): #not enough input_data
+            print('ERROR:Missing data to calculate             transpiration')
+            print('et_nc: path to actual evapotranspiration                  dataset')
+            print('ndm_nc: path to Net-Dry-Matter dataset')
+            print('i_nc: path to interception dataset')
+            return None
+        else: #input_data is sufficient to calculate t        
+            if 'ndm_max_original' in keys:#check ndm_max method
+                ndm_max_original=input_data['ndm_max_original']
+            else: #if no method specified, keep False
+                ndm_max_original=False
+            et_nc=input_data['et_nc'] #
+            i_nc=input_data['i_nc']
+            ndm_nc=input_data['ndm_nc']
+            t_nc=calc_transpiration(et_nc,i_nc,ndm_nc,
+                       chunksize=chunksize,
+                       ndm_max_original=ndm_max_original)            
+    #Evaporation
+    e_nc=calc_evaporation(et_nc,i_nc,t_nc,chunksize=chunksize)            
+    return e_nc,i_nc,t_nc
+
+def calc_interception(p_nc,lai_nc,nrd_nc,
+                      output=None,
+                      chunksize=None):
+    '''
+    calculate interception from LAI and precipitation
+    '''
+    #open dataset
+    p=cf.open_nc(p_nc,chunksize=chunksize,layer=0)
+    lai=cf.open_nc(lai_nc,chunksize=chunksize,layer=0)
+    nrd=cf.open_nc(nrd_nc,chunksize=chunksize,layer=0)
+    #fill nan
+    
+    #calculate Interception
+    i = lai * (1 - (1 + (p/nrd) \
+                    * (1 - xr.ufuncs.exp(-0.5 * lai)) \
+                    * (1/lai))**-1) * nrd
+    #fill in nan value due to missing lai value    
+    i = xr.where(xr.ufuncs.isnan(i),0,i)+p*0
+    #save dataset
+    i=i.transpose('time','latitude','longitude') 
+    i.name='Interception'
+    i.attrs={'units':p.attrs['units'],
+    'source':'LAI* (1-(1+(P/nRD)*(1-exp(-0.5*LAI))*(1/LAI))**-1)*nRD',
+    'quantity':'interception'
+    }
+    comp = dict(zlib=True, 
+                complevel=9, 
+                least_significant_digit=2, 
+                chunksizes=chunksize)
+    encoding = {i.name: comp}    
+    if output is None:
+        output=os.path.join(os.path.dirname(p_nc),
+                            'interception.nc')
+    print('Save Interception datacube as {0}'.format(output)) 
+    i.load().to_netcdf(output,encoding=encoding)
+    #close dataset
+    p.close()
+    lai.close()
+    nrd.close()
+    return output
+
+def calc_transpiration(et_nc,i_nc,ndm_nc,
+                       chunksize=None,
+                       output=None,
+                       ndm_max_original=False):
+    '''
+    calculate transpiration from net-dry-matter, given actual 
+    evapotranspiration and interception
+    '''
+    #open dataset
+    et=cf.open_nc(et_nc,chunksize=chunksize,layer=0)
+    i=cf.open_nc(i_nc,chunksize=chunksize,layer=0)
+    ndm=cf.open_nc(ndm_nc,chunksize=chunksize,layer=0)
+    #calculate maximum NDM
+    if not ndm_max_original:
+        ndm_month_avg=ndm.groupby('time.month').mean(
+                dim=['time'],skipna=True) #calculate monthly mean
+        ndm_month_std=ndm.groupby('time.month').std(
+                dim=['time'],skipna=True) #calculate monthly std
+        ndm_month_max=ndm_month_avg+2*ndm_month_std
+        #spread monthly max to all time steps in datacube
+        ndm_max=ndm*0        
+        for i in range(len(ndm_max)):
+           m=pd.to_datetime(ndm.time[0].data).month #month index
+           ndm_max[i]=ndm_month_max[m-1]
+        
+    if ndm_max_original:
+        ndm_month_max=ndm.groupby('time.month').max(
+                dim=['time'],skipna=True) #calculate monthly max      
+        #spread monthly max to all time steps in datacube
+        ndm_max=ndm*0  
+        for i in range(len(ndm_max)):
+           m=pd.to_datetime(ndm.time[0].data).month #month index
+           ndm_max[i]=ndm_month_max[m-1]/0.95
+    #calculate Transpiration
+    t=xr.ufuncs.minimum((ndm/ndm_max),0.95)*(et-i)
+    #fill in nan value due to missing ndm value    
+    t = xr.where(xr.ufuncs.isnan(t),0,t)+et*0
+    #save dataset
+    t=t.transpose('time','latitude','longitude') 
+    t.name='transpiration'
+    t.attrs={'units':et.attrs['units'],
+    'source':'minimum(0.95,NDM/NDM_max)*(ETa-I)',
+    'quantity':'Transpiration'
+    }
+    comp = dict(zlib=True, 
+                complevel=9, 
+                least_significant_digit=2, 
+                chunksizes=chunksize)
+    encoding = {t.name: comp}    
+    if output is None:
+        output=os.path.join(os.path.dirname(et_nc),
+                            'transpiration.nc')
+    print('Save Transpiration datacube as {0}'.format(output)) 
+    t.load().to_netcdf(output,encoding=encoding)
+    #close dataset
+    et.close()
+    i.close()
+    ndm.close()
+    return output
+
+def calc_evaporation(et_nc,i_nc,t_nc,
+                     chunksize=None,
+                     output=None):
+    '''
+    calculate evaporation from actual evapotranspiration, given interception
+    and transpiration portions
+    
+    '''
+    #open dataset
+    et=cf.open_nc(et_nc,chunksize=chunksize,layer=0)
+    i=cf.open_nc(i_nc,chunksize=chunksize,layer=0)
+    t=cf.open_nc(t_nc,chunksize=chunksize,layer=0)
+    #calculate evaporation
+    e=et-i-t
+    #save dataset
+    e=e.transpose('time','latitude','longitude') 
+    e.name='evaporation'
+    e.attrs={'units':et.attrs['units'],
+    'source':'ETa - I - T',
+    'quantity':'Evaporation'
+    }
+    comp = dict(zlib=True, 
+                complevel=9, 
+                least_significant_digit=2, 
+                chunksizes=chunksize)
+    encoding = {e.name: comp}    
+    if output is None:
+        output=os.path.join(os.path.dirname(et_nc),
+                            'evaporation.nc')
+    print('Save Evaporation datacube as {0}'.format(output)) 
+    e.load().to_netcdf(output,encoding=encoding)
+    #close dataset
+    et.close()
+    i.close()
+    t.close()    
+    
+    return output
+
+def calc_ndm(npp_nc):
+    '''
+    Calculate Net Dry Matter based on monthly Net Primary Production
     '''
     return
-
 #%% Sheet 3 functions
 def calc_GBP(npp_nc,output_folder):
     '''
@@ -91,6 +278,90 @@ def calc_crop_val_per_season(val_nc,lu_map,crop_lucl,
     '''
     return
 #%% Sheet 4 functions
+def add_flow(flow_nc,additional_flow_nc,
+             flow_name='total_flow',
+             output=None,chunksize=None):
+    '''
+    Add additional_flow_nc to flow_nc and save to new dataset
+    '''
+    flow=cf.open_nc(flow_nc,chunksize=chunksize,layer=0)
+    additional_flow=cf.open_nc(additional_flow_nc,
+                               chunksize=chunksize,layer=0)
+    source_info='sum of '+flow.name+' and '+additional_flow.name
+    total_flow=flow+additional_flow
+    #Add attributes
+    total_flow.name=flow_name
+    total_flow=total_flow.transpose('time',
+                                    'latitude','longitude')
+    total_flow.attrs={'units':flow.attrs['units'],
+                    'source':source_info,
+                    'quantity':flow_name
+                                  }    
+    if output is None:
+        output=os.path.join(
+                os.path.dirname(flow_nc),
+                '{0}.nc'.format(flow_name))
+    comp = dict(zlib=True, 
+                complevel=9, 
+                least_significant_digit=2, 
+                chunksizes=chunksize)
+    print('Save summed {0} as {1}'.format(flow_name,output))
+    total_flow.load().to_netcdf(output,
+                 encoding={total_flow.name:comp})  
+    return output  
+
+def split_flow(flow_nc,
+               fraction=0.5,
+               fraction_nc=None,                           
+               output=None,
+               chunksize=None,
+               sub_names = ['sw','gw'] ):
+    '''
+    split flow_nc into 2 flows using a fraction map or value.
+    For example, used to split supply into sw and gw supply, 
+    or for split return flow into sw and gw return flow
+    '''
+    flow=cf.open_nc(flow_nc,chunksize=chunksize,layer=0)
+    source_info=flow.name
+    if fraction_nc is not None: #use fraction map
+        fraction=cf.open_nc(fraction_nc,
+                            chunksize=chunksize,layer=0)
+        source_info+= ' multiplied by ' +fraction.name
+    else:
+        source_info+= ' multiplied by {0}'.format(fraction)
+
+    flow_one=flow*fraction 
+    flow_two=flow-flow_one 
+    
+    #modify attributes of splitted flow datasets
+    flow_one=flow_one.transpose('time','latitude','longitude')
+    flow_two=flow_two.transpose('time','latitude','longitude')
+    name=flow.name
+    flow_one.name='{0}_{1}'.format(name,sub_names[0])
+    flow_two.name='{0}_{1}'.format(name,sub_names[1])
+    flow_one.attrs={'units':flow.attrs['units'],
+                    'source':source_info,
+                    'quantity':flow.attrs['quantity']
+                                  }
+    flow_two.attrs={'units':flow.attrs['units'],
+                    'source':flow.name+' minus ' +source_info,
+                    'quantity':flow.attrs['quantity']
+                                  }
+    if output is None:
+        output=flow_nc.replace('.nc','_{0}.nc')
+    comp = dict(zlib=True, 
+                complevel=9, 
+                least_significant_digit=2, 
+                chunksizes=chunksize)
+    one_output=output.format(sub_names[0])
+    two_output=output.format(sub_names[1])
+    print('Save splitted {0} as {1} and {2}'.format(
+            name,one_output,two_output))
+    flow_one.load().to_netcdf(one_output,
+                 encoding={one_output.name:comp})
+    flow_two.load().to_netcdf(two_output,
+                 encoding={two_output.name:comp})    
+    return one_output,two_output
 def calc_sw_supply_fraction_by_LU(lu_nc,aeisw_nc,
                                   output=None,
                                   chunksize=None):
@@ -154,47 +425,7 @@ def calc_sw_return_fraction():
     SWRETFRAC[DTOT > 0] = (DSRO/(DTOT))[DTOT > 0]
     '''
     return
-def split_flow_by_fraction(flow_nc,fraction_nc,
-               output=None,chunksize=None,
-               sub_names = ['sw','gw'] ):
-    '''
-    split flow_nc into 2 flows using a fraction map
-    for example, used for splitting supply into sw and gw supply, 
-    or for splitting return flow into sw and gw return flow
-    '''
-    flow=cf.open_nc(flow_nc,chunksize=chunksize,layer=0)
-    fraction=cf.open_nc(fraction_nc,chunksize=chunksize,layer=0)
-    
-    sw_flow=flow*fraction
-    gw_flow=flow-sw_flow
-    
-    #modify attributes of splitted flow datasets
-    sw_flow=sw_flow.transpose('time','latitude','longitude')
-    gw_flow=gw_flow.transpose('time','latitude','longitude')
-    name=flow.name
-    sw_flow.name='{0}_{1}'.format(name,sub_names[0])
-    gw_flow.name='{0}_{1}'.format(name,sub_names[1])
-    sw_flow.attrs={'units':flow.attrs['units'],
-                              'source':'LUWA, GMIA_aeisw',
-                              'quantity':flow.attrs['quantity']
-                                  }
-    gw_flow.attrs={'units':flow.attrs['units'],
-                              'source':'LUWA, GMIA_aeisw',
-                              'quantity':flow.attrs['quantity']
-                                  }
-    #save output
-    if output is None:
-        output=flow_nc.replace('.nc','_{0}.nc')
-    comp = dict(zlib=True, 
-                complevel=9, 
-                least_significant_digit=2, 
-                chunksizes=chunksize)
-    sw_output=output.format(sub_names[0])
-    gw_output=output.format(sub_names[1])
-    print('Save splitted {0} as {1} and {2}'.format(name,sw_output,gw_output))
-    sw_flow.load().to_netcdf(sw_output,encoding={sw_flow.name:comp})
-    gw_flow.load().to_netcdf(gw_output,encoding={gw_flow.name:comp})    
-    return sw_flow,gw_flow
+
 
 def calc_nonconsumed_supply(supply_nc,etincr_nc,
                             output=None, chunksize=None):
@@ -282,7 +513,7 @@ def calc_land_surface_water_demand(lai_nc, etref_nc, p_nc, lu_nc,
                      encoding={'land_surface_water_demand':comp})           
     return demand
 
-def add_residential_water_consumption(population_tif,area_tif,
+def calc_residential_water_consumption(population_tif,area_tif,
                                lu_nc,blue_water_nc,
                                wcpc=100,flow_type='demand',
                                chunksize=None,
@@ -337,29 +568,27 @@ def add_residential_water_consumption(population_tif,area_tif,
                     1.0,#True
                     0.0) #False
     residential_wc+=nan_residential_wc*mean #fill nan residential_wc w/ mean 
-    total_blue_water=blue_water+residential_wc #add residential_wc
-   
+    residential_wc+=blue_water*0 #replace nan in blue_water     
     # Save total_blue_water
-    total_blue_water=total_blue_water.transpose('time',
+    residential_wc=residential_wc.transpose('time',
                                                  'latitude','longitude')
-    total_blue_water.name=blue_water.name
-    total_blue_water.attrs={'units':blue_water.attrs['units'],
-                              'source':blue_water.attrs['source']\
-                        + ' , added residential water {0}'.format(flow_type),
-                              'quantity':blue_water.attrs['quantity']
+    residential_wc.name=blue_water.name
+    residential_wc.attrs={'units':blue_water.attrs['units'],
+                      'source':'WCPC*Population/area',
+                      'quantity':'residential water {0}'.format(flow_type)
                                   }
     if output is None:
-        output=blue_water_nc.replace('.nc',
-                                     '_with_residential_{0}.nc'.format(
+        output=os.path.join(os.path.dirname(blue_water_nc),
+                                     'residential_{0}.nc'.format(
                                              flow_type))
     comp = dict(zlib=True, 
                 complevel=9, 
                 least_significant_digit=2, 
                 chunksizes=chunksize)
-    print('Save {0} added residential water as {1}'.format(
-            blue_water.name,output))
-    total_blue_water.load().to_netcdf(output,
-                         encoding={total_blue_water.name:comp})    
+    print('Save residential water {0} as {1}'.format(
+            flow_type,output))
+    residential_wc.load().to_netcdf(output,
+                         encoding={residential_wc.name:comp})    
     #close files and return results
     blue_water.close()
     lu.close()
