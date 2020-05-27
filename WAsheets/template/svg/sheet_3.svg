@@ -34,7 +34,7 @@
      id="namedview3338"
      showgrid="false"
      inkscape:zoom="0.5842322"
-     inkscape:cx="355.80082"
+     inkscape:cx="704.77966"
      inkscape:cy="594.54662"
      inkscape:window-x="-9"
      inkscape:window-y="-9"
@@ -75,8 +75,8 @@
      inkscape:groupmode="layer"
      id="g3344"><rect
    transform="scale(1,-1)"
-   y="-793.24841"
-   x="0"
+   y="-826.11206"
+   x="1.3693186"
    height="822.04803"
    width="1084.35"
    id="rect3678"
@@ -110,8 +110,9 @@
 
 
 
+
 <text
-   id="basin2"
+   id="basin"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;line-height:0%;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#2b2b2a;fill-opacity:1;fill-rule:nonzero;stroke:none"
    transform="scale(1,-1)"
    x="87.027374 99.199371 108.54937 117.89938 122.52337 132.80836"
@@ -123,8 +124,9 @@
      style="font-size:17px;line-height:1.25">Basin: NaN</tspan></text>
 
 
+
 <text
-   id="period2"
+   id="period"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;line-height:0%;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#2b2b2a;fill-opacity:1;fill-rule:nonzero;stroke:none"
    transform="scale(1,-1)"
    x="86.332161"
@@ -134,6 +136,7 @@
      x="86.332161"
      style="font-size:17px;line-height:1.25"
      y="-699.97833">Period: NaN</tspan></text>
+
 
 
 
@@ -328,6 +331,7 @@
      style="font-size:18px;line-height:1.25">Sheet 3: Agricultural services</tspan></text>
 
 
+
 <g
    transform="translate(765.95238,366.52737)"
    id="g3346-2"><path
@@ -437,6 +441,7 @@
      x="399.39328"
      y="0" /></text>
 
+
 <text
    y="-626.63586"
    x="771.19513"
@@ -454,6 +459,7 @@
      x="771.19513 784.30212 793.63513 799.17712 808.51013 815.00409 819.61108 828.94409 839.2121 849.4801 858.81311 869.08112 884.07507 894.34314 899.88507 904.49207 914.76007"
      style="font-size:17px;line-height:1.25;stroke-width:1">water consumption</tspan></text>
 
+
 <text
    id="units"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12px;line-height:0%;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#202121;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1"
@@ -465,6 +471,7 @@
      x="77.034683"
      y="-669.60205"
      style="font-size:18px;line-height:1.25;stroke-width:1">Part 1: Agricultural water consumption (NaN)</tspan></text>
+
 
 <text
    y="-532.99518"
@@ -478,6 +485,7 @@
      x="771.19409 780.67413 789.31409"
      style="font-size:15px;line-height:1.25;stroke-width:1">ET</tspan></text>
 
+
 <text
    y="-464.96579"
    x="771.19409"
@@ -489,6 +497,7 @@
      y="-464.96579"
      x="771.19409 780.67413 789.31409 792.95911 797.42908 802.73914 811.37909 824.18909 827.83411 833.1441 840.95911 844.60413 853.24408 857.71411 865.52911 869.17413 872.81909"
      style="font-size:15px;line-height:1.25;stroke-width:1">ET from rainfall</tspan></text>
+
 
 <text
    y="-464.96579"
@@ -502,6 +511,7 @@
      x="880.39624 883.31219 887.56018 891.80823 894.72424 901.63623 907.88818 911.46423 917.71619"
      style="font-size:12px;line-height:1.25;stroke-width:1">irrigated</tspan></text>
 
+
 <text
    y="-430.95016"
    x="771.19409"
@@ -513,6 +523,7 @@
      y="-430.95016"
      x="771.19409 774.83911 783.47913 791.29407 796.60413 804.41907 817.22913 825.04407 833.68408 838.15411 845.96912 849.61414 853.25909 862.73914 871.37909"
      style="font-size:15px;line-height:1.25;stroke-width:1">Incremental ET</tspan></text>
+
 
 <text
    y="-430.95016"
@@ -526,6 +537,7 @@
      x="878.66333 881.57935 885.82733 890.07532 892.99133 899.90332 906.1554 909.73132 915.98328"
      style="font-size:12px;line-height:1.25;stroke-width:1">irrigated</tspan></text>
 
+
 <text
    y="-396.9346"
    x="771.19409"
@@ -537,6 +549,7 @@
      y="-396.9346"
      x="771.19409 778.72412 787.36414 791.83411 799.64911 803.29407 806.93909 816.41907 825.05908"
      style="font-size:15px;line-height:1.25;stroke-width:1">Total ET</tspan></text>
+
 
 <text
    y="-396.9346"
@@ -550,6 +563,7 @@
      x="880.58337 883.49939 887.74738 891.99536 894.91132 901.82336 908.07538 911.65137 917.90332"
      style="font-size:12px;line-height:1.25;stroke-width:1">irrigated</tspan></text>
 
+
 <text
    y="-515.74927"
    x="985.04449"
@@ -561,6 +575,7 @@
      y="-515.74927"
      x="985.04449"
      style="font-size:14.39940357px;line-height:1.25;stroke-width:0.97226262">NaN</tspan></text>
+
 
 <text
    id="ag_water_cons"
@@ -574,6 +589,7 @@
      x="957.33826"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
 
+
 <text
    id="crop_r02"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12px;line-height:0%;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1"
@@ -585,6 +601,7 @@
      y="-464.96805"
      x="957.33826"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
+
 
 <text
    y="-432.9512"
@@ -598,6 +615,7 @@
      x="957.33173"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
 
+
 <text
    y="-395.93515"
    x="957.33173"
@@ -609,6 +627,7 @@
      y="-395.93515"
      x="957.33173"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
+
 
 <text
    id="crop_r01c01"
@@ -622,6 +641,7 @@
      x="136.63936"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
 
+
 <text
    id="crop_r01c02"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12px;line-height:0%;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1"
@@ -633,6 +653,7 @@
      y="-528.99329"
      x="266.61588"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
+
 
 <text
    id="crop_r01c03"
@@ -646,6 +667,7 @@
      x="386.88251"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
 
+
 <text
    id="crop_r01c04"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12px;line-height:0%;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1"
@@ -657,6 +679,7 @@
      y="-532.19324"
      x="536.28296"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
+
 
 <text
    id="crop_r01c05"
@@ -677,6 +700,7 @@
 
 
 
+
 <text
    id="crop_r02c01"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12px;line-height:0%;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1"
@@ -688,6 +712,7 @@
      y="-464.46725"
      x="136.63936"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
+
 
 <text
    id="crop_r02c02"
@@ -701,6 +726,7 @@
      x="266.61591"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
 
+
 <text
    id="crop_r02c03"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12px;line-height:0%;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1"
@@ -713,6 +739,7 @@
      x="386.88251"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
 
+
 <text
    id="crop_r02c04"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12px;line-height:0%;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1"
@@ -724,6 +751,7 @@
      y="-464.86832"
      x="536.28302"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
+
 
 <text
    id="crop_r02c05"
@@ -744,6 +772,7 @@
 
 
 
+
 <text
    id="crop_r04c01"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12px;line-height:0%;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1"
@@ -755,6 +784,7 @@
      y="-396.21768"
      x="136.63936"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
+
 
 <text
    id="crop_r04c02"
@@ -768,6 +798,7 @@
      x="266.61588"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
 
+
 <text
    id="crop_r04c03"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12px;line-height:0%;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1"
@@ -780,6 +811,7 @@
      x="386.88245"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
 
+
 <text
    id="crop_r04c04"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12px;line-height:0%;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1"
@@ -791,6 +823,7 @@
      y="-396.61874"
      x="536.28296"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
+
 
 <text
    id="crop_r04c05"
@@ -811,6 +844,7 @@
 
 
 
+
 <text
    id="crop_r03c01"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12px;line-height:0%;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1"
@@ -822,6 +856,7 @@
      y="-431.4697"
      x="136.63936"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
+
 
 <text
    id="crop_r03c02"
@@ -835,6 +870,7 @@
      x="266.61588"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
 
+
 <text
    id="crop_r03c03"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12px;line-height:0%;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1"
@@ -847,6 +883,7 @@
      x="386.88251"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
 
+
 <text
    id="crop_r03c04"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12px;line-height:0%;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1"
@@ -858,6 +895,7 @@
      y="-431.87076"
      x="536.28296"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
+
 
 <text
    id="crop_r03c05"
@@ -878,6 +916,7 @@
 
 
 
+
 <text
    id="text3578"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12px;line-height:0%;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#2b2b2a;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1"
@@ -889,6 +928,7 @@
      y="-532.99518"
      x="887.65845 891.90643 898.15851 901.0744 907.98645 911.5625 917.81445"
      style="font-size:12px;line-height:1.25;stroke-width:1">rainfed</tspan></text>
+
 
 <text
    id="text3496-5-72"
@@ -902,6 +942,7 @@
      y="-566.20709"
      style="font-size:14px;line-height:1.25;letter-spacing:-0.31999999px;stroke-width:1">Zaid</tspan></text>
 
+
 <text
    id="text3496-5-7-6"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12px;line-height:0%;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#2b2b2a;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1"
@@ -914,6 +955,7 @@
      y="-566.20026"
      style="font-size:14px;line-height:1.25;letter-spacing:-0.31999999px;stroke-width:1">Kharif</tspan></text>
 
+
 <text
    id="text3496-5-7-4-5"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12px;line-height:0%;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#2b2b2a;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1"
@@ -925,6 +967,7 @@
      x="263.2348"
      y="-565.38147"
      style="font-size:14px;line-height:1.25;letter-spacing:-0.31999999px;stroke-width:1">Rabi</tspan></text>
+
 
 
 
@@ -1018,6 +1061,7 @@
      x="480.689 494.40704 501.7981 513.40704"
      style="font-size:19px;line-height:1.25;stroke-width:1">Crop</tspan></text>
 
+
 <text
    y="-222.77168"
    x="194.65988"
@@ -1029,6 +1073,7 @@
      sodipodi:role="line"
      id="tspan3644-0"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
+
 
 <text
    y="-225.51033"
@@ -1042,6 +1087,7 @@
      id="tspan3644-0-4"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
 
+
 <text
    y="-224.14101"
    x="465.82547"
@@ -1054,6 +1100,7 @@
      id="tspan3644-0-4-5"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
 
+
 <text
    y="-223.91032"
    x="602.76837"
@@ -1065,6 +1112,7 @@
      sodipodi:role="line"
      id="tspan3644-0-4-51"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
+
 
 <text
    y="-222.77168"
@@ -1085,6 +1133,7 @@
 
 
 
+
 <text
    y="-178.73135"
    x="194.65955"
@@ -1096,6 +1145,7 @@
      sodipodi:role="line"
      id="tspan3644-0-0-2"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
+
 
 <text
    y="-181.47"
@@ -1109,6 +1159,7 @@
      id="tspan3644-0-4-34-04"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
 
+
 <text
    y="-180.10068"
    x="465.82516"
@@ -1121,6 +1172,7 @@
      id="tspan3644-0-4-5-6"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
 
+
 <text
    y="-179.87"
    x="602.76807"
@@ -1132,6 +1184,7 @@
      sodipodi:role="line"
      id="tspan3644-0-4-51-9"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
+
 
 <text
    y="-178.73135"
@@ -1152,6 +1205,7 @@
 
 
 
+
 <text
    y="-96.263763"
    x="194.65988"
@@ -1163,6 +1217,7 @@
      sodipodi:role="line"
      id="tspan3644-0-8"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
+
 
 <text
    y="-99.002396"
@@ -1176,6 +1231,7 @@
      id="tspan3644-0-4-75"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
 
+
 <text
    y="-97.63308"
    x="465.82547"
@@ -1188,6 +1244,7 @@
      id="tspan3644-0-4-5-65"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
 
+
 <text
    y="-97.402397"
    x="602.76837"
@@ -1199,6 +1256,7 @@
      sodipodi:role="line"
      id="tspan3644-0-4-51-7"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
+
 
 <text
    y="-96.263763"
@@ -1219,6 +1277,7 @@
 
 
 
+
 <text
    y="-55.42358"
    x="194.65955"
@@ -1230,6 +1289,7 @@
      sodipodi:role="line"
      id="tspan3644-0-0-1"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
+
 
 <text
    y="-58.16222"
@@ -1243,6 +1303,7 @@
      id="tspan3644-0-4-34-0"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
 
+
 <text
    y="-56.7929"
    x="465.82516"
@@ -1255,6 +1316,7 @@
      id="tspan3644-0-4-5-6-2"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
 
+
 <text
    y="-56.562222"
    x="602.76807"
@@ -1266,6 +1328,7 @@
      sodipodi:role="line"
      id="tspan3644-0-4-51-9-8"
      style="font-size:14px;line-height:1.25;stroke-width:1">NaN</tspan></text>
+
 
 <text
    y="-55.42358"
@@ -1294,6 +1357,7 @@
 
 
 
+
 <text
    y="-201.57831"
    x="95.354057"
@@ -1305,6 +1369,7 @@
      style="font-size:15px;line-height:1.25;stroke-width:1"
      x="95.354057"
      y="-201.57831">GBP</tspan></text>
+
 
 <text
    y="-78.869431"
@@ -1318,6 +1383,7 @@
      x="88.779007"
      y="-78.869431">GBWP</tspan></text>
 
+
 <text
    y="-223.13936"
    x="891.95563"
@@ -1329,6 +1395,7 @@
      style="font-size:15px;line-height:1.25;stroke-width:1"
      x="891.95563"
      y="-223.13936">Rainfed </tspan></text>
+
 
 <text
    y="-179.98758"
@@ -1342,6 +1409,7 @@
      x="887.73956"
      y="-179.98758">Irrigated </tspan></text>
 
+
 <text
    y="-58.086399"
    x="885.28595"
@@ -1353,6 +1421,7 @@
      style="font-size:15px;line-height:1.25;stroke-width:1"
      x="885.28595"
      y="-58.086399">Irrigated </tspan></text>
+
 
 <text
    y="-98.654213"
@@ -1366,6 +1435,7 @@
      x="887.73956"
      y="-98.654213">Rainfed </tspan></text>
 
+
 <text
    id="text3496-5-72-0"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12px;line-height:0%;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#2b2b2a;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1"
@@ -1378,6 +1448,7 @@
      y="-261.81992"
      style="font-size:14px;line-height:1.25;letter-spacing:-0.31999999px;stroke-width:1">Zaid</tspan></text>
 
+
 <text
    id="text3496-5-7-6-9"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12px;line-height:0%;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#2b2b2a;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1"
@@ -1389,6 +1460,7 @@
      x="191.57982"
      y="-260.44376"
      style="font-size:14px;line-height:1.25;letter-spacing:-0.31999999px;stroke-width:1">Kharif</tspan></text>
+
 
 <text
    id="text3496-5-7-4-5-4"
@@ -1414,6 +1486,7 @@
 
 
 
+
 <text
    id="text3496-5-72-4"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12px;line-height:0%;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#2b2b2a;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1"
@@ -1425,6 +1498,7 @@
      y="-566.20709"
      style="font-size:14px;line-height:1.25;letter-spacing:-0.31999999px;stroke-width:1"
      id="tspan405">Forest plantation</tspan></text>
+
 <text
    id="text3496-5-72-4-0"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12px;line-height:0%;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#2b2b2a;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1"
@@ -1436,6 +1510,7 @@
      y="-566.00659"
      style="font-size:14px;line-height:1.25;letter-spacing:-0.31999999px;stroke-width:1"
      id="tspan405-6">Double/Triple Crop</tspan></text>
+
 <text
    id="text3496-5-72-4-0-5"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12px;line-height:0%;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#2b2b2a;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1"
@@ -1447,6 +1522,7 @@
      y="-263.30173"
      style="font-size:14px;line-height:1.25;letter-spacing:-0.31999999px;stroke-width:1"
      id="tspan405-6-6">Double/Triple Crop</tspan></text>
+
 <text
    id="text3496-5-72-4-3"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12px;line-height:0%;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#2b2b2a;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1"
@@ -1458,4 +1534,5 @@
      y="-262.01788"
      style="font-size:14px;line-height:1.25;letter-spacing:-0.31999999px;stroke-width:1"
      id="tspan405-7">Forest plantation</tspan></text>
+
 </g></svg>

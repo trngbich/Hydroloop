@@ -296,7 +296,19 @@ def get_sheet2_classes(version = '1.0'):
     return sheet2_classes[version]
     
 def get_sheet3_classes(version = '1.0'):
+    '''
+    version 1.0 for original sheet 3
+    version 2.0 for Karnataka 
+    '''
     sheet3_classes =dict()
+    sheet3_classes['2.0'] =  {
+            'Kharif':{'RAIN':[35],'IRRI':[54]},
+            'Rabi':{'RAIN':[36],'IRRI':[55]},
+            'Zaid':{'RAIN':[37],'IRRI':[56]},
+            'Double/Triple Crop':{'RAIN':[38],'IRRI':[57]},
+            'Forest plantation':{'RAIN':[33],'IRRI':[52]},
+        }
+                                             
     sheet3_classes['1.0'] =  { 'CROP':         {'Cereals':              {'-':                     {'RAIN': [35], 'IRRI': [54]}},
                      
                                              'Non-cereals':          {'Root/tuber crops':          {'RAIN': [36],'IRRI': [55]},
@@ -367,7 +379,7 @@ def get_hi_and_ec():
 
 def get_sheet1_classes(lulc_version = '4.0'):
     lulc_dict = get_lulcs(lulc_version = lulc_version)
-    categories = ['Protected', 'Utilized', 'Modified', 'Managed']
+    categories = ['PROTECTED', 'UTILIZED', 'MODIFIED', 'MANAGED']
     sheet1_classes = dict()
     for cat in categories:
         sheet1_classes[cat] = [key for key, value in zip(list(lulc_dict.keys()), list(lulc_dict.values())) if value[1] == cat]
