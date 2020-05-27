@@ -49,9 +49,9 @@
      inkscape:window-height="1001"
      id="namedview4"
      showgrid="false"
-     inkscape:zoom="0.34452032"
-     inkscape:cx="-0.68624442"
-     inkscape:cy="21.04338"
+     inkscape:zoom="0.68904064"
+     inkscape:cx="521.88547"
+     inkscape:cy="592.60772"
      inkscape:window-x="-9"
      inkscape:window-y="-9"
      inkscape:window-maximized="1"
@@ -71,6 +71,8 @@
      y="-154.16736"
      id="tspan6453"
      style="fill:#ffffff;fill-opacity:1">NaN</tspan></text>
+
+
 <text
    id="of_r05_c01"
    y="-82.16729"
@@ -81,6 +83,8 @@
      y="-82.16729"
      x="919.67316"
      style="fill:#ffffff;fill-opacity:1">NaN</tspan></text>
+
+
 <rect
    id="rect3678"
    style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd"
@@ -105,6 +109,8 @@
      y="991.42078"
      sodipodi:role="line"
      id="tspan2260">Incremental ET manmade</tspan></text>
+
+
 <text
    transform="scale(1,-1)"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:13px;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
@@ -119,6 +125,8 @@
      y="-569.41888"
      sodipodi:role="line"
      id="tspan2294">ET</tspan></text>
+
+
 <text
    id="text5749"
    style="font-weight:bold;font-size:13.0001049px;font-family:Arial;fill:#ffffff;fill-opacity:1"
@@ -133,6 +141,8 @@
      x="985.69727"
      y="-287.4841"
      style="fill:#ffffff;fill-opacity:1" /></text>
+
+
 <text
    transform="scale(1,-1)"
    style="font-weight:bold;font-size:15.00012016px;font-family:Arial;fill:#ffffff;fill-opacity:1"
@@ -143,6 +153,8 @@
      y="-581.36768"
      id="tspan6399"
      style="fill:#ffffff;fill-opacity:1">NaN</tspan></text>
+
+
 <text
    id="of_r01_c02"
    y="-581.36768"
@@ -153,6 +165,8 @@
      y="-581.36768"
      x="1020.4719"
      style="fill:#ffffff;fill-opacity:1">NaN</tspan></text>
+
+
 <text
    transform="scale(1,-1)"
    style="font-weight:bold;font-size:15.00012016px;font-family:Arial;fill:#ffffff;fill-opacity:1"
@@ -163,6 +177,8 @@
      y="-422.96838"
      id="tspan6425"
      style="fill:#ffffff;fill-opacity:1">NaN</tspan></text>
+
+
 <text
    id="of_r09_c02"
    y="-386.16824"
@@ -174,6 +190,8 @@
      y="-386.16824"
      x="1020.4719"
      style="fill:#ffffff;fill-opacity:1">NaN</tspan></text>
+
+
 <text
    transform="scale(1,-1)"
    style="font-weight:bold;font-size:15.00012016px;font-family:Arial;fill:#ffffff;fill-opacity:1"
@@ -184,6 +202,8 @@
      y="-362.16815"
      id="tspan6433"
      style="fill:#ffffff;fill-opacity:1">NaN</tspan></text>
+
+
 <text
    id="sp_r02_c04"
    y="-288.56787"
@@ -194,6 +214,8 @@
      y="-288.56787"
      x="1020.4719"
      style="fill:#ffffff;fill-opacity:1">NaN</tspan></text>
+
+
 <text
    id="text6479"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:13px;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
@@ -208,6 +230,8 @@
      y="-424.00894"
      x="1056.064"
      id="tspan6487">tional ET</tspan></text>
+
+
 <text
    transform="scale(1,-1)"
    y="-362.68439"
@@ -218,6 +242,8 @@
      y="-362.68439"
      id="tspan4798"
      style="fill:#ffffff;fill-opacity:1">Non-recoverable</tspan></text>
+
+
 <text
    id="text4802"
    style="font-weight:bold;font-size:13.0001049px;font-family:Arial;fill:#ffffff;fill-opacity:1"
@@ -228,6 +254,8 @@
      y="-386.68448"
      x="985.69727"
      style="fill:#ffffff;fill-opacity:1">Other</tspan></text>
+
+
 <g
    id="g12"
    transform="translate(798.637,626.5605)"><path
@@ -3451,48 +3479,54 @@
    inkscape:connector-curvature="0" /><g
    id="g1980"
    transform="translate(155.2088,144.6709)"><path
-     d="m 0,0 -14.172,28.347 14.173,28.346 90.707,-10e-4 2.837,325.983 h 73.699 l 14.173,-12.4 -14.173,-12.404 H 124.725 V 56.692 H 487.889 V -0.001 Z"
+     d="m 0,0 -14.172,28.347 14.173,28.346 90.707,-10e-4 2.837,325.983 86.21888,-0.82098 13.14678,-11.78426 L 179.76388,358.07624 124.725,357.871 V 56.692 H 487.889 V -0.001 Z"
      style="fill:#73b7d1;fill-opacity:1;fill-rule:nonzero;stroke:none"
      id="path1982"
-     inkscape:connector-curvature="0" /></g><g
+     inkscape:connector-curvature="0"
+     sodipodi:nodetypes="ccccccccccccc" /></g><g
    id="g1984"
    transform="translate(155.2088,144.6709)"><path
-     d="m 0,0 -14.172,28.347 14.173,28.346 90.707,-10e-4 2.837,325.983 h 73.699 l 14.173,-12.4 -14.173,-12.404 H 124.725 V 56.692 H 487.889 V -0.001 Z"
+     d="m 0,0 -14.172,28.347 14.173,28.346 90.707,-10e-4 2.837,325.983 86.62936,-0.20524 14.58349,-12.81049 L 180.17436,358.07624 124.725,357.871 V 56.692 H 487.889 V -0.001 Z"
      style="fill:none;stroke:#ffffff;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
      id="path1986"
-     inkscape:connector-curvature="0" /></g><path
+     inkscape:connector-curvature="0"
+     sodipodi:nodetypes="ccccccccccccc" /></g><path
    d="M 588.86,428.136 H 435.789 v 49.606 H 588.86 Z"
    style="fill:#427387;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
    id="path1988"
    inkscape:connector-curvature="0" /><path
-   d="m 814.473,658.85 h -179 v 19.5 h 179 z"
+   d="m 715.95595,656.38707 h -179 v 19.5 h 179 z"
    style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
    id="path1990"
    inkscape:connector-curvature="0" /><text
    transform="scale(1,-1)"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:18px;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#2b2b2a;fill-opacity:1;fill-rule:nonzero;stroke:none"
    id="text1996"
-   x="646.60968"
-   y="-663.34961"><tspan
-     x="646.60968 660.34369 669.09167 678.82965 687.5777 697.31567 706.06366 715.8017 719.54565 734.61169 743.35968 748.09369 756.84167 762.58368 766.3277 778.06366 786.81165"
-     y="-663.34961"
+   x="549.73462"
+   y="-664.17059"><tspan
+     x="549.73462 563.46863 572.21661 581.95459 590.70264 600.44061 609.1886 618.92664 622.67059 637.73663 646.48462 651.21863 659.96661 665.70862 669.45264 681.1886 689.93658"
+     y="-664.17059"
      sodipodi:role="line"
      id="tspan1998">Managed Water Use</tspan></text>
+
+
 
 <g
    id="g2000"
    transform="translate(154.5862,73.8066)"
    style="fill:#5396aa;fill-opacity:1"><path
-     d="M 0,0 -14.172,28.344 0,56.691 l 42.517,0.02 10e-4,446.434 H 167.24 l 14.176,-12.399 -14.174,-12.404 H 76.534 L 76.533,56.69 H 488.512 V 0 Z"
+     d="M 0,0 -14.172,28.344 0,56.691 l 42.517,0.02 10e-4,446.434 H 178.32317 L 196.60404,490.54075 178.32517,478.54724 76.534,478.342 76.533,56.69 H 488.512 V 0 Z"
      style="fill:#5396aa;fill-opacity:1;fill-rule:nonzero;stroke:none"
      id="path2002"
-     inkscape:connector-curvature="0" /></g><g
+     inkscape:connector-curvature="0"
+     sodipodi:nodetypes="ccccccccccccc" /></g><g
    id="g2004"
    transform="translate(154.5862,73.8066)"><path
-     d="M 0,0 -14.172,28.344 0,56.691 l 42.517,0.02 10e-4,446.434 H 167.24 l 14.176,-12.399 -14.174,-12.404 H 76.534 L 76.533,56.69 H 488.512 V 0 Z"
+     d="M 0,0 -14.172,28.344 0,56.691 l 42.517,0.02 10e-4,446.434 135.39468,-0.20524 20.7438,-12.60425 L 178.11992,478.342 H 76.534 L 76.533,56.69 H 488.512 V 0 Z"
      style="fill:none;stroke:#ffffff;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
      id="path2006"
-     inkscape:connector-curvature="0" /></g><g
+     inkscape:connector-curvature="0"
+     sodipodi:nodetypes="ccccccccccccc" /></g><g
    id="g2008"
    transform="translate(191.0901,215.624)"><path
      d="M 0,0 H 6.851 L 22.416,8.505 38.155,0 h 7.199"
@@ -3751,6 +3785,8 @@
 
 
 
+
+
 <text
    transform="scale(1,-1)"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:15px;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#2b2b2a;fill-opacity:1;fill-rule:nonzero;stroke:none"
@@ -3761,6 +3797,8 @@
      y="-168.752"
      sodipodi:role="line"
      id="tspan2288">Surface water</tspan></text>
+
+
 
 
 <text
@@ -3805,6 +3843,8 @@
      id="tspan2310"
      style="stroke-width:0.94868332">Other</tspan></text>
 
+
+
 <text
    transform="matrix(0,1,1,0,0,0)"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:15px;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#2b2b2a;fill-opacity:1;fill-rule:nonzero;stroke:none"
@@ -3816,30 +3856,32 @@
      sodipodi:role="line"
      id="tspan2314">Groundwater withdrawal</tspan></text>
 
+
+
 <text
    transform="scale(1,-1)"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:14px;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#202121;fill-opacity:1;fill-rule:nonzero;stroke:none"
    id="text2316"
-   x="255.96356"
-   y="-558.17969"><tspan
-     x="255.96356"
-     y="-558.17969"
+   x="242.00697"
+   y="-559.41113"><tspan
+     x="242.00697"
+     y="-559.41113"
      id="tspan2318">Q</tspan></text>
+
+
 
 <text
    transform="scale(1,-1)"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:8.1619997px;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#202121;fill-opacity:1;fill-rule:nonzero;stroke:none"
    id="text2320"
-   x="266.96356"
-   y="-557.51758"><tspan
-     x="266.96356 271.96686"
-     y="-557.51758"
+   x="253.62271"
+   y="-559.15955"><tspan
+     x="253.62271"
+     y="-559.15955"
      sodipodi:role="line"
-     id="tspan2322">gw</tspan><tspan
-     x="277.96591 279.96561"
-     y="-562.83923"
-     sodipodi:role="line"
-     id="tspan2324">in</tspan></text>
+     id="tspan2324">gw</tspan></text>
+
+
 
 <text
    transform="scale(1,-1)"
@@ -3851,6 +3893,8 @@
      y="-508.57419"
      id="tspan2328">Q</tspan></text>
 
+
+
 <text
    transform="scale(1,-1)"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:8.1619997px;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#202121;fill-opacity:1;fill-rule:nonzero;stroke:none"
@@ -3861,10 +3905,12 @@
      y="-507.91211"
      sodipodi:role="line"
      id="tspan2332">sw</tspan><tspan
-     x="277.96591 279.96561"
-     y="-513.2337"
+     x="266.96356"
+     y="0"
      sodipodi:role="line"
-     id="tspan2334">in</tspan></text>
+     id="tspan2334" /></text>
+
+
 
 <text
    transform="scale(1,-1)"
@@ -3876,6 +3922,8 @@
      y="-99.030296"
      sodipodi:role="line"
      id="tspan2338">Groundwater</tspan></text>
+
+
 
 
 
@@ -3896,6 +3944,8 @@
 
 
 
+
+
 <text
    transform="scale(0.94868326,-1.0540926)"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12.33288288px;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.94868332"
@@ -3907,6 +3957,8 @@
      sodipodi:role="line"
      id="tspan2390"
      style="stroke-width:0.94868332">Greenhouses</tspan></text>
+
+
 
 <text
    transform="scale(1,-1)"
@@ -3927,6 +3979,8 @@
      sodipodi:role="line"
      id="tspan2398">drawals</tspan></text>
 
+
+
 <text
    transform="matrix(1,0,0,-1,132.458,724.5527)"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:17px;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#2b2b2a;fill-opacity:1;fill-rule:nonzero;stroke:none"
@@ -3936,6 +3990,8 @@
      sodipodi:role="line"
      id="tspan2404">Period: NaN</tspan></text>
 
+
+
 <text
    transform="matrix(1,0,0,-1,128.0269,758.1758)"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:18px;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#202121;fill-opacity:1;fill-rule:nonzero;stroke:none"
@@ -3944,6 +4000,8 @@
      y="0"
      sodipodi:role="line"
      id="tspan2410">Part 1: Manmade (NaN)</tspan></text>
+
+
 
 <text
    transform="scale(1,-1)"
@@ -3955,6 +4013,8 @@
      y="-781.40942"
      sodipodi:role="line"
      id="tspan2420">Sheet 4: Utilized Flow </tspan></text>
+
+
 
 <g
    id="g2422"><g
@@ -3977,6 +4037,8 @@
      y="-461.3092"
      x="663.1297">NaN</tspan></text>
 
+
+
 <text
    id="sp_r08_c02"
    y="-262.0618"
@@ -3990,6 +4052,8 @@
      y="-245.8118"
      x="663.1297" /></text>
 
+
+
 <text
    id="sp_r01_c02"
    y="-609.37982"
@@ -3999,6 +4063,8 @@
      id="tspan4846"
      y="-609.37982"
      x="663.1297">NaN</tspan></text>
+
+
 
 <text
    id="sp_r03_c02"
@@ -4014,6 +4080,8 @@
      y="-494.66357"
      x="663.1297" /></text>
 
+
+
 <text
    id="sp_r05_c02"
    y="-410.69116"
@@ -4026,6 +4094,8 @@
      id="tspan4902"
      y="-394.44104"
      x="663.1297" /></text>
+
+
 
 <text
    id="sp_r06_c02"
@@ -4040,6 +4110,8 @@
      y="-344.67065"
      x="663.1297" /></text>
 
+
+
 <text
    id="sp_r07_c02"
    y="-311.83224"
@@ -4053,6 +4125,8 @@
      y="-295.58206"
      x="663.1297" /></text>
 
+
+
 <text
    id="sp_r02_c02"
    y="-560.19568"
@@ -4064,6 +4138,8 @@
      y="-560.19568"
      x="663.1297">NaN</tspan></text>
 
+
+
 <text
    id="sp_r04_c03"
    y="-436.47192"
@@ -4074,6 +4150,8 @@
      y="-436.47192"
      x="737.6416"
      style="fill:#000000">NaN</tspan></text>
+
+
 
 <text
    id="sp_r08_c03"
@@ -4090,6 +4168,8 @@
      x="737.6416"
      style="fill:#000000" /></text>
 
+
+
 <text
    id="sp_r01_c03"
    y="-584.54254"
@@ -4100,6 +4180,8 @@
      y="-584.54254"
      x="737.6416"
      style="fill:#000000">NaN</tspan></text>
+
+
 
 <text
    id="sp_r03_c03"
@@ -4117,6 +4199,8 @@
      x="737.6416"
      style="fill:#000000" /></text>
 
+
+
 <text
    id="sp_r05_c03"
    y="-385.85388"
@@ -4131,6 +4215,8 @@
      y="-369.60376"
      x="737.6416"
      style="fill:#000000" /></text>
+
+
 
 <text
    id="sp_r06_c03"
@@ -4147,6 +4233,8 @@
      x="737.6416"
      style="fill:#000000" /></text>
 
+
+
 <text
    id="sp_r07_c03"
    y="-286.99493"
@@ -4162,6 +4250,8 @@
      x="737.6416"
      style="fill:#000000" /></text>
 
+
+
 <text
    id="sp_r02_c03"
    y="-535.3584"
@@ -4174,6 +4264,8 @@
      x="737.6416"
      style="fill:#000000">NaN</tspan></text>
 
+
+
 <text
    id="sp_r04_c01"
    y="-450.01956"
@@ -4184,6 +4276,8 @@
      id="tspan516-6"
      y="-450.01956"
      x="400.08197">NaN</tspan></text>
+
+
 
 <text
    id="sp_r08_c01"
@@ -4199,6 +4293,8 @@
      y="-234.52211"
      x="400.08197" /></text>
 
+
+
 <text
    id="sp_r01_c01"
    y="-598.09015"
@@ -4209,6 +4305,8 @@
      id="tspan4846-0"
      y="-598.09015"
      x="400.08197">NaN</tspan></text>
+
+
 
 <text
    id="sp_r03_c01"
@@ -4224,6 +4322,8 @@
      y="-483.37393"
      x="400.08197" /></text>
 
+
+
 <text
    id="sp_r05_c01"
    y="-399.40152"
@@ -4237,6 +4337,8 @@
      id="tspan4902-1"
      y="-383.15137"
      x="400.08197" /></text>
+
+
 
 <text
    id="sp_r06_c01"
@@ -4252,6 +4354,8 @@
      y="-333.38098"
      x="400.08197" /></text>
 
+
+
 <text
    id="sp_r07_c01"
    y="-300.54254"
@@ -4266,6 +4370,8 @@
      y="-284.29236"
      x="400.08197" /></text>
 
+
+
 <text
    id="sp_r02_c01"
    y="-548.90601"
@@ -4277,6 +4383,8 @@
      y="-548.90601"
      x="400.08197">NaN</tspan></text>
 
+
+
 <text
    id="dm_r04_c01"
    y="-450.01956"
@@ -4286,6 +4394,8 @@
      id="tspan516-5"
      y="-450.01956"
      x="597.64972">NaN</tspan></text>
+
+
 
 <text
    id="dm_r08_c01"
@@ -4300,6 +4410,8 @@
      y="-234.52209"
      x="597.64972" /></text>
 
+
+
 <text
    id="dm_r01_c01"
    y="-598.09021"
@@ -4309,6 +4421,8 @@
      id="tspan4846-8"
      y="-598.09021"
      x="597.64972">NaN</tspan></text>
+
+
 
 <text
    id="dm_r03_c01"
@@ -4324,6 +4438,8 @@
      y="-483.37393"
      x="597.64972" /></text>
 
+
+
 <text
    id="dm_r05_c01"
    y="-399.40152"
@@ -4336,6 +4452,8 @@
      id="tspan4902-07"
      y="-383.15137"
      x="597.64972" /></text>
+
+
 
 <text
    id="dm_r06_c01"
@@ -4350,6 +4468,8 @@
      y="-333.38098"
      x="597.64972" /></text>
 
+
+
 <text
    id="dm_r07_c01"
    y="-300.54254"
@@ -4363,6 +4483,8 @@
      y="-284.29236"
      x="597.64972" /></text>
 
+
+
 <text
    id="dm_r02_c01"
    y="-548.90607"
@@ -4374,27 +4496,33 @@
      y="-548.90607"
      x="597.64972">NaN</tspan></text>
 
+
+
 <text
    id="wd_r02_c01"
-   y="-511.36163"
-   x="294.61688"
+   y="-509.71967"
+   x="304.87909"
    style="font-weight:bold;font-size:13.0001049px;font-family:Arial;fill:#000000"
    transform="scale(1,-1)"><tspan
      id="tspan4846-6-0"
-     y="-511.36163"
-     x="294.61688"
+     y="-509.71967"
+     x="304.87909"
      style="fill:#000000">NaN</tspan></text>
+
+
 
 <text
    id="wd_r01_c01"
    y="-561.03625"
-   x="295.08792"
+   x="302.47672"
    style="font-weight:bold;font-size:13.0001049px;font-family:Arial;fill:#000000"
    transform="scale(1,-1)"><tspan
      id="tspan4846-6-0-1"
      y="-561.03625"
-     x="295.08792"
+     x="302.47672"
      style="fill:#000000">NaN</tspan></text>
+
+
 
 <text
    id="wd_r03_c01"
@@ -4406,6 +4534,8 @@
      y="-437.97876"
      x="337.98868"
      style="fill:#ffffff">NaN</tspan></text>
+
+
 
 <text
    id="text364"
@@ -4422,6 +4552,8 @@
      id="tspan370"
      y="-568.63293"
      x="840.453">water</tspan></text>
+
+
 
 
 
@@ -4442,6 +4574,8 @@
 
 
 
+
+
 <text
    transform="scale(1,-1)"
    style="font-weight:bold;font-size:15.00012016px;font-family:Arial;fill:#2b2b2a"
@@ -4451,6 +4585,8 @@
      x="919.67316"
      y="-288.56787"
      id="tspan6445">NaN</tspan></text>
+
+
 
 <rect
    style="opacity:1;fill:#73b7d1;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.79602891;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
@@ -4468,6 +4604,8 @@
      id="tspan6449"
      y="-169.01088"
      x="766.15076">NaN</tspan></text>
+
+
 
 
 <rect
@@ -4489,6 +4627,8 @@
 
 
 
+
+
 <text
    id="basin1"
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:17px;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#2b2b2a;fill-opacity:1;fill-rule:nonzero;stroke:none"
@@ -4497,6 +4637,8 @@
      sodipodi:role="line"
      y="0"
      x="0">Basin: NaN</tspan></text>
+
+
 
 <text
    id="text202"
@@ -4508,6 +4650,8 @@
      y="-631.94635"
      x="649.17755">Consumed</tspan></text>
 
+
+
 <text
    id="text504"
    style="font-weight:bold;font-size:12.00009727px;font-family:Arial;fill:#2b2b2a"
@@ -4517,6 +4661,8 @@
      id="tspan506"
      y="-631.94635"
      x="394.69736">Supply</tspan></text>
+
+
 
 <text
    style="font-weight:bold;font-size:12.00009727px;font-family:Arial;fill:#2b2b2a"
@@ -4528,6 +4674,8 @@
      y="-631.94629"
      id="tspan3749">Demand</tspan></text>
 
+
+
 <text
    style="font-weight:bold;font-size:12.00009727px;font-family:Arial;fill:#2b2b2a"
    id="text3751"
@@ -4537,6 +4685,8 @@
      x="719.57709"
      y="-631.94629"
      id="tspan3753">Non-consumed</tspan></text>
+
+
 
 
 
@@ -4560,6 +4710,8 @@
      x="840.76868"
      id="tspan4856">water</tspan></text>
 
+
+
 <flowRoot
    transform="matrix(0.8,0,0,-0.8,0,850.39304)"
    xml:space="preserve"
@@ -4571,7 +4723,7 @@
        height="42.074989"
        x="590.07605"
        y="826.96088" /></flowRegion><flowPara
-     id="flowPara2222"></flowPara></flowRoot><text
+     id="flowPara2222" /></flowRoot><text
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:15px;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#2b2b2a;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1"
    id="text2286-4"
    x="662.70184"
@@ -4584,6 +4736,8 @@
      y="-169.50275">Q<tspan
    style="font-size:64.99999762%;baseline-shift:sub"
    id="tspan2242">sw</tspan>return</tspan></text>
+
+
 <text
    style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:15px;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#2b2b2a;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1"
    id="text2286-4-3"
@@ -4597,6 +4751,8 @@
      y="-97.076874">Q<tspan
    style="font-size:64.99999762%;baseline-shift:sub"
    id="tspan2265">gw</tspan>return</tspan></text>
+
+
 <path
    transform="scale(1,-1)"
    style="opacity:1;fill:#73b7d1;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.80617154;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
@@ -4609,4 +4765,26 @@
    d="m 909.50128,-241.77724 19.63765,11.16818 18.12722,-11.16818 v 129.71411 h -37.76487 z"
    id="rect2275-6"
    inkscape:connector-curvature="0"
-   sodipodi:nodetypes="cccccc" /></g></svg>
+   sodipodi:nodetypes="cccccc" /><text
+   style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:8.1619997px;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#202121;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1"
+   id="text2320-3"
+   x="264.88208"
+   y="-565.57831"
+   transform="scale(1,-1)"><tspan
+     style="stroke-width:1"
+     x="264.88208"
+     y="-565.57831"
+     sodipodi:role="line"
+     id="tspan2324-0">supply</tspan></text>
+<text
+   style="font-variant:normal;font-weight:bold;font-stretch:normal;font-size:8.1619997px;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#202121;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1"
+   id="text2320-3-8"
+   x="276.00107"
+   y="-514.74158"
+   transform="scale(1,-1)"><tspan
+     style="stroke-width:1"
+     x="276.00107"
+     y="-514.74158"
+     sodipodi:role="line"
+     id="tspan2324-0-4">supply</tspan></text>
+</g></svg>
