@@ -9,51 +9,68 @@ import pandas as pd
 import WAsheets
 from WAsheets import calculate_flux as cf
 from WAsheets import hydroloop as hl
+from WAsheets import print_sheet as ps
 
-wp_folder=r"D:\Projects\ADB\analysis\Karnataka\Results_Karnataka\SM_balance"
+wp_folder=r"D:\Projects\ADB\analysis\Karnataka\Results_Karnataka\\New_SMBalance"
 BASIN={
        'name': 'Kanartaka',
        'hydroyear':'A-MAY', #Water year end month
        'chunksize':None,
+       'unit_conversion':1e3, #1e3 for input data in MCM, 1e6 for input data in km3
        'output_folder':r"D:\Projects\ADB\analysis\Karnataka\Results_Karnataka\Hydroloop\K2",
        'gis_data':{
                'basin_mask': os.path.join(wp_folder,
-                                          'K2_K3_K4','Tot_Mask_WGS84.tif'),
+                                          'K2','Shape','K2.tif'),
                'subbasin_mask':{
-                       1: r".tif",
-                       2: r".tif"
+                       1: r"D:\Projects\ADB\analysis\Karnataka\Results_Karnataka\Hyperloop\K2\Data\static_datasets\1_subbasin.tif",
+                       2: r"D:\Projects\ADB\analysis\Karnataka\Results_Karnataka\Hyperloop\K2\Data\static_datasets\1_subbasin.tif"
                        },
                'dem':None,
                'aeisw':None, #area equipped with surface water irrigation percentage
-               'population':None,
+               'population':r"D:\Projects\ADB\analysis\Karnataka\Results_Karnataka\Hyperloop\K2\Data\static_datasets\K2_pop.tif",
                },
        'data_cube':{
            'monthly':{
                'p':os.path.join(wp_folder,
-                                          'K2_K3_K4','K2K3K4_P_GPM.nc'),
+                                          'K2','K2_P_GPM.nc'),
                'et':os.path.join(wp_folder,
-                                          'K2_K3_K4','K2K3K4_ETa_SSEBop.nc'),
-               'i':None,
+                                          'K2','K2_ETa_SSEBop.nc'),
+               'i':os.path.join(wp_folder,
+                                          'K2','i_monthly.nc'),
                't':None,
                'e':None,
+               'nrd':os.path.join(wp_folder,
+                                          'K2','nrd_monthly.nc'),
                'etincr':os.path.join(wp_folder,
-                                          'K2_K3_K4','etincr_monthly.nc'),
+                                          'K2','etincr_monthly.nc'),
                'etrain':os.path.join(wp_folder,
-                                          'K2_K3_K4','etrain_monthly.nc'),
+                                          'K2','etrain_monthly.nc'),
                'lai':os.path.join(wp_folder,
-                                          'K2_K3_K4','K2K3K4_LAI_MOD15.nc'),
+                                          'K2','K2_LAI_MOD15.nc'),
               'ndm':os.path.join(wp_folder,
-                                          'K2_K3_K4','K2K3K4_DPM.nc')
+                                          'K2','K2_DPM.nc'),
+             'sro':os.path.join(wp_folder,
+                                          'K2','sro_monthly.nc'),
+             'sroincr':os.path.join(wp_folder,
+                                          'K2','d_sro_monthly.nc'),
+             'perc':os.path.join(wp_folder,
+                                          'K2','perco_monthly.nc'),
+             'percincr':os.path.join(wp_folder,
+                                          'K2','d_perco_monthly.nc'),
+             'bf':os.path.join(wp_folder,
+                                          'K2','bf_monthly.nc'),
+            'supply':os.path.join(wp_folder,
+                                          'K2','supply_monthly.nc')
                },
            'yearly':{
                 'lu':os.path.join(wp_folder,
-                                          'K2_K3_K4','K2K3K4_LU_WA.nc'),
+                                          'K2','K2_LU_WA.nc'),
                    }      
                      },
         'ts_data':{
                 'q_in_sw':{
                         'basin':r"total_inflow.csv",
-                        1:r"inflow_subbasin.csv",
+                        1:r"inflow_subbasin.csv", #unit MCM
                         2:r"inflow_subbasin.csv",
                         },
                 'q_in_gw':None,
@@ -109,6 +126,7 @@ e_nc,i_nc,t_nc=hl.split_ETI(BASIN['data_cube']['monthly']['et'],
                               chunksize=None,
                               p_nc=BASIN['data_cube']['monthly']['p'],
                               lai_nc=BASIN['data_cube']['monthly']['lai'],
+                              nrd_nc=BASIN['data_cube']['monthly']['nrd'],
                               ndm_nc=BASIN['data_cube']['monthly']['ndm']
               )        
 BASIN['data_cube']['monthly']['i']=i_nc
@@ -246,7 +264,7 @@ for subbasin in BASIN['gis_data']['subbasin_mask']:
                                        inflow=inflow,
                                        output=output,
                                        outflow=True, #not endorheic basin
-                                       unit_conversion=1000 #MCM
+                                       unit_conversion=BASIN['unit_conversion'] #MCM
                                        )
     BASIN['ts_data']['q_outflow'][subbasin]=discharge
     BASIN['ts_data']['dS_sw'][subbasin]=dS_sw
@@ -260,13 +278,42 @@ for key in BASIN['data_cube']['monthly']:
         BASIN['data_cube']['yearly'][key]=cf.create_yearly_dataset(
                 BASIN['data_cube']['monthly'][key], hydroyear=BASIN['hydroyear'])
 #%% Calculate monthly sheet csv
-sheet1_yearly_csvs=WAsheets.sheet1.main(BASIN,unit_conversion=1000)
-sheet2_yearly_csvs=WAsheets.sheet2.main(BASIN,unit_conversion=1000)
-sheet3_yearly_csvs=WAsheets.sheet3.main(BASIN,unit_conversion=1000)
-sheet4_yearly_csvs=WAsheets.sheet4.main(BASIN,unit_conversion=1000)
-sheet5_yearly_csvs=WAsheets.sheet5.main(BASIN,unit_conversion=1000)
-sheet6_yearly_csvs=WAsheets.sheet6.main(BASIN,unit_conversion=1000)
+sheet1_yearly_csvs=WAsheets.sheet1.main(BASIN,unit_conversion=BASIN['unit_conversion'])
+sheet2_yearly_csvs=WAsheets.sheet2.main(BASIN,unit_conversion=BASIN['unit_conversion'])
+sheet3_yearly_csvs=WAsheets.sheet3.main(BASIN,unit_conversion=BASIN['unit_conversion'])
+sheet4_yearly_csvs=WAsheets.sheet4.main(BASIN,unit_conversion=BASIN['unit_conversion'])
+sheet5_yearly_csvs=WAsheets.sheet5.main(BASIN,unit_conversion=BASIN['unit_conversion'])
+sheet6_yearly_csvs=WAsheets.sheet6.main(BASIN,unit_conversion=BASIN['unit_conversion'])
 #%% Print hydro-yearly sheet csv
+for sheet1_csv in sheet1_yearly_csvs:
+    period=os.path.basename(sheet1_csv).split('.')[0].split('_')[-1]
+    output=sheet1_csv.replace('.csv','.png')
+    ps.print_sheet1(BASIN['name'],period=period,output=output,units='MCM',sheet1_csv)
+    
+for sheet2_csv in sheet2_yearly_csvs:
+    period=os.path.basename(sheet2_csv).split('.')[0].split('_')[-1]
+    output=sheet2_csv.replace('.csv','.png')
+    ps.print_sheet2(BASIN['name'],period=period,output=output,units='MCM',sheet2_csv)
+    
+for sheet3_csv in sheet3_yearly_csvs:
+    period=os.path.basename(sheet3_csv).split('.')[0].split('_')[-1]
+    output=sheet3_csv.replace('.csv','.png')
+    ps.print_sheet3(BASIN['name'],period=period,output=output,units='MCM',sheet3_csv)
+    
+for sheet4_csv in sheet4_yearly_csvs:
+    period=os.path.basename(sheet4_csv).split('.')[0].split('_')[-1]
+    output=[sheet4_csv.replace('.csv','_part1.png'),sheet4_csv.replace('.csv','_part2.png')]
+    ps.print_sheet4(BASIN['name'],period=period,output=output,units='MCM',sheet4_csv)
+    
+for sheet5_csv in sheet5_yearly_csvs:
+    period=os.path.basename(sheet5_csv).split('.')[0].split('_')[-1]
+    output=sheet5_csv.replace('.csv','.png')
+    ps.print_sheet5(BASIN['name'],period=period,output=output,units='MCM',sheet5_csv)
+    
+for sheet6_csv in sheet6_yearly_csvs:
+    period=os.path.basename(sheet6_csv).split('.')[0].split('_')[-1]
+    output=sheet6_csv.replace('.csv','.png')
+    ps.print_sheet6(BASIN['name'],period=period,output=output,units='MCM',sheet6_csv)
 
 #%% Test discharge
 
