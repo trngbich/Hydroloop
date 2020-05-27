@@ -13,18 +13,26 @@ import pandas as pd
 import xarray as xr
 import matplotlib.pyplot as plt
 import calendar
+import datetime
+import csv
 from itertools import groupby
 from operator import itemgetter
+from dateutil.relativedelta import relativedelta
 from . import calculate_flux as cf
 from . import get_dictionaries as gd
 from . import GIS_functions as gis
-
 
 #%% General
 def check_requirement_sheet(BASIN,requirements,
                              gis_data=True,
                              data_cube=True,
                              params=True): 
+    '''
+    Check if BASIN dictionary includes the path to files required for WA+ sheet
+    BASIN: dictionary
+    requirements: dictionary
+    
+    '''
     #check parameters requirements
     if len(requirements['params']-BASIN['gis_data'].keys())>0:
         print('Required parameters for Sheet {0} are missing: '.format(
@@ -59,6 +67,213 @@ def check_requirement_sheet(BASIN,requirements,
                 data_cube=False
     
     return gis_data*data_cube*params
+
+def calc_yearly_sheet(monthly_csvs,output_folder,hydroyear='A-DEC'):
+    '''
+    calculate hydro-yearly sheet from monthly sheet csvs
+    
+    '''
+    hydroyear_boundary={'A-DEC':1,'A-JAN':2,'A-FEB':3,'A-MAR':4,'A-APR':5,
+                        'A-MAY':6,'A-JUN':7,'A-JUL':8,'A-AUG':9,'A-SEP':10,
+                        'A-OCT':11,'A-NOV':12}
+    boundary_month=hydroyear_boundary[hydroyear]
+    
+    all_years=np.array(
+            [int(os.path.basename(csv).split('.')[0].split('_')[1]) for csv in monthly_csvs])
+    years=np.unique(all_years)#get unique years
+    yearly_csvs=[]
+    for year in years:        
+        start = datetime.date(year, boundary_month, 1)
+        end=start+relativedelta(years=1)-relativedelta(days=1)
+        csvs_in_years=[]
+        for file in monthly_csvs:
+            sheet=os.path.basename(file).split('.')[0].split('_')[0]
+            m_year=int(os.path.basename(file).split('.')[0].split('_')[1])
+            m_month=int(os.path.basename(file).split('.')[0].split('_')[2])
+            date=datetime.date(m_year,m_month,1)            
+            if start<=date<=end: #check if month belong to year
+                csvs_in_years.append(file) #append to the current year
+        if len(csvs_in_years)<12: #if hydro year does not have enough months
+            print('Missing monthly sheet for year {0}'.format(year))
+        elif len(csvs_in_years)==12: #if hydro year has enough months
+            for i in range(12):
+                if i==0:
+                    df_year=pd.read_csv(csvs_in_years[i],sep=';')
+                else:
+                    df=pd.read_csv(csvs_in_years[i],sep=';')
+                    for col in df.columns:
+                        if type(df[col][0]) is not str:
+                            df_year[col]+=df[col].values
+            output_fh=os.path.join(output_folder,'{0}_{1}.csv'.format(sheet,year))
+            df_year.to_csv(output_fh,sep=';',index=False)
+            yearly_csvs.append(output_fh)
+    return yearly_csvs
+
+            
+            
+    return yearly_csvs
+def add_flow(flow_nc,additional_flow_nc,
+             name='total_flow',
+             output=None,chunksize=None):
+    '''
+    Add additional_flow_nc to flow_nc and save to new dataset
+    '''
+    flow=cf.open_nc(flow_nc,chunksize=chunksize,layer=0)
+    additional_flow=cf.open_nc(additional_flow_nc,
+                               chunksize=chunksize,layer=0)
+    source_info='sum of '+flow.name+' and '+additional_flow.name
+    total_flow=flow+additional_flow
+    #Add attributes
+    total_flow.name=name
+    total_flow=total_flow.transpose('time',
+                                    'latitude','longitude')
+    total_flow.attrs={'units':flow.attrs['units'],
+                    'source':source_info,
+                    'quantity':name
+                                  }    
+    if output is None:
+        output=os.path.join(
+                os.path.dirname(flow_nc),
+                '{0}.nc'.format(name))
+    comp = dict(zlib=True, 
+                complevel=9, 
+                least_significant_digit=2, 
+                chunksizes=chunksize)
+    print('Save summed {0} as {1}'.format(name,output))
+    total_flow.load().to_netcdf(output,
+                 encoding={total_flow.name:comp})  
+    return output  
+
+def substract_flow(flow_nc,subtract_flow_nc,
+             name='difference_flow',
+             output=None,chunksize=None):
+    '''
+    Add additional_flow_nc to flow_nc and save to new dataset
+    '''
+    flow=cf.open_nc(flow_nc,chunksize=chunksize,layer=0)
+    subtract_flow=cf.open_nc(subtract_flow_nc,
+                               chunksize=chunksize,layer=0)
+    source_info='difference of '+flow.name+' and '+subtract_flow.name
+    difference_flow=flow-subtract_flow
+    #Add attributes
+    difference_flow.name=name
+    difference_flow=difference_flow.transpose('time',
+                                    'latitude','longitude')
+    difference_flow.attrs={'units':flow.attrs['units'],
+                    'source':source_info,
+                    'quantity':name
+                                  }    
+    if output is None:
+        output=os.path.join(
+                os.path.dirname(flow_nc),
+                '{0}.nc'.format(name))
+    comp = dict(zlib=True, 
+                complevel=9, 
+                least_significant_digit=2, 
+                chunksizes=chunksize)
+    print('Save summed {0} as {1}'.format(name,output))
+    difference_flow.load().to_netcdf(output,
+                 encoding={difference_flow.name:comp})  
+    return output  
+
+def split_flow(flow_nc,
+               fraction=0.5,
+               fraction_nc=None,                           
+               output=None,
+               chunksize=None,
+               sub_names = ['sw','gw'] ):
+    '''
+    split flow_nc into 2 flows using a fraction map or value.
+    For example, used to split supply into sw and gw supply, 
+    or for split return flow into sw and gw return flow
+    
+    flow_nc: str
+        path to the flow to split
+    fraction: float
+        single fraction value. default is 0.5
+    fraction_nc: str
+        path to the fraction map
+    output: str
+        path to the output filename 'output_{0}.nc'
+    sub_names: list
+        name of the splitted flows ex. ['sw','gw']
+    '''
+    flow=cf.open_nc(flow_nc,chunksize=chunksize,layer=0)
+    source_info=flow.name
+    if fraction_nc is not None: #use fraction map
+        fraction=cf.open_nc(fraction_nc,
+                            chunksize=chunksize,layer=0)
+        source_info+= ' multiplied by ' +fraction.name
+    else:
+        source_info+= ' multiplied by {0}'.format(fraction)
+
+    flow_one=flow*fraction 
+    flow_two=flow-flow_one 
+    
+    #modify attributes of splitted flow datasets
+    flow_one=flow_one.transpose('time','latitude','longitude')
+    flow_two=flow_two.transpose('time','latitude','longitude')
+    name=flow.name
+    flow_one.name='{0}_{1}'.format(name,sub_names[0])
+    flow_two.name='{0}_{1}'.format(name,sub_names[1])
+    flow_one.attrs={'units':flow.attrs['units'],
+                    'source':source_info,
+                    'quantity':flow.attrs['quantity']
+                                  }
+    flow_two.attrs={'units':flow.attrs['units'],
+                    'source':flow.name+' minus ' +source_info,
+                    'quantity':flow.attrs['quantity']
+                                  }
+    if output is None:
+        output=flow_nc.replace('.nc','_{0}.nc')
+    comp = dict(zlib=True, 
+                complevel=9, 
+                least_significant_digit=2, 
+                chunksizes=chunksize)
+    one_output=output.format(sub_names[0])
+    two_output=output.format(sub_names[1])
+    print('Save splitted {0} as {1} and {2}'.format(
+            name,one_output,two_output))
+    flow_one.load().to_netcdf(one_output,
+                 encoding={flow_one.name:comp})
+    flow_two.load().to_netcdf(two_output,
+                 encoding={flow_two.name:comp})    
+    return one_output,two_output
+
+def flow_ratio(numerator_nc,denominator_nc,
+               name=None,attrs=None,
+               chunksize=None,
+               output=None
+               ):
+    '''
+    Calculate ratio of dataset divided by another dataset
+    '''
+    numerator=cf.open_nc(numerator_nc,chunksize=chunksize,layer=0)
+    denominator=cf.open_nc(denominator_nc,chunksize=chunksize,layer=0)
+    if name is None:
+        name=numerator.name+' by '+denominator.name+' ratio'
+    ratio=numerator/denominator #calculate ratio
+    #add attributes
+    ratio=ratio.transpose('time','latitude','longitude')
+    ratio.name=name
+    if attrs is None:
+        attrs={'units': '-', 
+               'source': numerator.source +', '+denominator.source,
+               'quantity':name}
+    ratio.attrs=attrs
+    #save ratio to new netCDF
+    if output is None:
+        output=os.path.join(os.path.dirname(numerator_nc),
+                            '{0}.nc'.format(name.replace(' ','_')))
+    comp = dict(zlib=True, 
+                complevel=9, 
+                least_significant_digit=2, 
+                chunksizes=chunksize)
+    ratio.load().to_netcdf(output,
+                 encoding={ratio.name:comp})  
+    return output
+        
+    
 #%% Sheet 2 functions
     
 def split_ETI(et_nc,i_nc=None,t_nc=None,
@@ -259,110 +474,160 @@ def calc_ndm(npp_nc):
     '''
     return
 #%% Sheet 3 functions
-def calc_GBP(npp_nc,output_folder):
-    '''
-    calculate Gross Biomass Production
-    '''
-    return
-
-def calc_GBWP(gbp_nc, et_nc, output_folder):
-    '''
-    calculate Gross Biomass Water Productivity
-    '''
-    return
-
-def calc_crop_val_per_season(val_nc,lu_map,crop_lucl,
-                           begin='2009-01-01',end='2009-06-12'):
-    '''
-    val_nc
-    '''
-    return
-#%% Sheet 4 functions
-def add_flow(flow_nc,additional_flow_nc,
-             flow_name='total_flow',
-             output=None,chunksize=None):
-    '''
-    Add additional_flow_nc to flow_nc and save to new dataset
-    '''
-    flow=cf.open_nc(flow_nc,chunksize=chunksize,layer=0)
-    additional_flow=cf.open_nc(additional_flow_nc,
-                               chunksize=chunksize,layer=0)
-    source_info='sum of '+flow.name+' and '+additional_flow.name
-    total_flow=flow+additional_flow
-    #Add attributes
-    total_flow.name=flow_name
-    total_flow=total_flow.transpose('time',
-                                    'latitude','longitude')
-    total_flow.attrs={'units':flow.attrs['units'],
-                    'source':source_info,
-                    'quantity':flow_name
-                                  }    
-    if output is None:
-        output=os.path.join(
-                os.path.dirname(flow_nc),
-                '{0}.nc'.format(flow_name))
-    comp = dict(zlib=True, 
-                complevel=9, 
-                least_significant_digit=2, 
-                chunksizes=chunksize)
-    print('Save summed {0} as {1}'.format(flow_name,output))
-    total_flow.load().to_netcdf(output,
-                 encoding={total_flow.name:comp})  
-    return output  
-
-def split_flow(flow_nc,
-               fraction=0.5,
-               fraction_nc=None,                           
-               output=None,
-               chunksize=None,
-               sub_names = ['sw','gw'] ):
-    '''
-    split flow_nc into 2 flows using a fraction map or value.
-    For example, used to split supply into sw and gw supply, 
-    or for split return flow into sw and gw return flow
-    '''
-    flow=cf.open_nc(flow_nc,chunksize=chunksize,layer=0)
-    source_info=flow.name
-    if fraction_nc is not None: #use fraction map
-        fraction=cf.open_nc(fraction_nc,
-                            chunksize=chunksize,layer=0)
-        source_info+= ' multiplied by ' +fraction.name
-    else:
-        source_info+= ' multiplied by {0}'.format(fraction)
-
-    flow_one=flow*fraction 
-    flow_two=flow-flow_one 
+def import_growing_seasons(csv_fh):
+    """
+    Reads an csv file with dates, see example for format of the csv file.
     
-    #modify attributes of splitted flow datasets
-    flow_one=flow_one.transpose('time','latitude','longitude')
-    flow_two=flow_two.transpose('time','latitude','longitude')
-    name=flow.name
-    flow_one.name='{0}_{1}'.format(name,sub_names[0])
-    flow_two.name='{0}_{1}'.format(name,sub_names[1])
-    flow_one.attrs={'units':flow.attrs['units'],
-                    'source':source_info,
-                    'quantity':flow.attrs['quantity']
-                                  }
-    flow_two.attrs={'units':flow.attrs['units'],
-                    'source':flow.name+' minus ' +source_info,
-                    'quantity':flow.attrs['quantity']
-                                  }
-    if output is None:
-        output=flow_nc.replace('.nc','_{0}.nc')
-    comp = dict(zlib=True, 
-                complevel=9, 
-                least_significant_digit=2, 
-                chunksizes=chunksize)
-    one_output=output.format(sub_names[0])
-    two_output=output.format(sub_names[1])
-    print('Save splitted {0} as {1} and {2}'.format(
-            name,one_output,two_output))
-    flow_one.load().to_netcdf(one_output,
-                 encoding={one_output.name:comp})
-    flow_two.load().to_netcdf(two_output,
-                 encoding={two_output.name:comp})    
-    return one_output,two_output
-def calc_sw_supply_fraction_by_LU(lu_nc,aeisw_nc,
+    Parameters
+    ----------
+    csv_fh : str
+        Filehandle pointing to csv-file
+        
+    Returns
+    -------
+    start_dates : ndarray
+        List with datetime.date objects
+    end_dates : ndarray
+        List with datetime.date object
+    
+    Examples
+    --------
+    The csv file should be like:
+    >>> Start;End<new_line> 
+            04/11/2000;17/02/2001<new_line>
+            03/05/2001;02/07/2001<new_line>
+            29/11/2001;27/02/2002<new_line>
+            etc.
+    
+    """
+    start_dates = np.array([])
+    end_dates = np.array([])
+
+    with open(csv_fh) as csvfile:
+         reader = csv.reader(csvfile, delimiter=';')
+         for row in reader:
+             if np.all([row[0] != 'Start', row[1] != 'End']):
+                 start_dates = np.append(start_dates, 
+                                         datetime.datetime.strptime(row[0], 
+                                         '%d/%m/%Y').date())
+                 end_dates = np.append(end_dates, 
+                                       datetime.datetime.strptime(row[1], 
+                                       '%d/%m/%Y').date())    
+    return start_dates, end_dates
+
+def calc_seasonal_value(ts,start_dates,end_dates,output=None,name='Seasonal'):
+    '''
+    ts: pandas.series.Series
+            monthly time-series
+    start_dates: np.array datetime.date
+    end_dates: np.array datetime.date
+    '''
+    season_data=[]
+    for i in range(len(start_dates)): #loop over each season        
+        startdate=start_dates[i] #season start date
+        enddate=end_dates[i] #season end date
+        current = datetime.date(startdate.year, startdate.month, 1)
+        end_month = datetime.date(enddate.year, enddate.month, 1)
+        
+        req_dates = np.array([current])
+        while current < end_month:
+            current = current + relativedelta(months = 1)
+            req_dates = np.append(req_dates, current)
+        
+        season_complete = True
+        season_value=np.nan
+        for date in req_dates: #check if all months in season available
+            season_complete = np.all([season_complete, date in ts.index])
+            if not season_complete:
+                print("{0} missing in input data, skipping this season".format(date))
+        if season_complete:        
+            fractions = np.ones(np.shape(req_dates))            
+            start_month_length = float(calendar.monthrange(startdate.year,
+                                                           startdate.month)[1])
+            end_month_length = float(calendar.monthrange(enddate.year,
+                                                         enddate.month)[1])   
+            #fraction of season days in the first month
+            fractions[0] = (start_month_length - startdate.day + 1) / start_month_length
+            #fraction of season days in the last month
+            fractions[-1] = (enddate.day -1) / end_month_length        
+            month_values=np.array(
+                    [ts.loc[date]*fraction \
+                     for date, fraction in zip(req_dates, fractions)])
+            season_value=np.nansum(month_values)
+        season_data.append(season_value)        
+    result=pd.DataFrame({ #
+            'start_dates':start_dates,
+            'end_dates':end_dates,
+            name:np.array(season_data)
+            })
+    if output is not None:
+        result.to_csv(output,sep=';')    
+    return result
+
+def aggregate_year_from_season(df,output=None,
+                               hydroyear='A-DEC',
+                               name='Yearly',how='sum'):
+    '''
+    aggregate seasonal timeseries to yearly timeseries
+    
+    df: pandas.DataFrame
+        seasonal dataframe with 3 columns
+        start_dates: datetime.date
+        end_dates: datetime.date
+        Seasonal_total: float
+    output: str
+        path to output csv file
+    how: str
+        'sum' sum all seasonal value
+        'average' average all seasonal value
+    '''
+    start_dates=df.start_dates
+    end_dates=df.end_dates
+    ts=df[df.columns[2]]
+    years = np.unique(np.array(
+            [date.year for date in np.append(start_dates, end_dates)]))
+    ###hydroyear boundary
+    hydroyear_boundary={'A-DEC':1,'A-JAN':2,'A-FEB':3,'A-MAR':4,'A-APR':5,
+                        'A-MAY':6,'A-JUN':7,'A-JUL':8,'A-AUG':9,'A-SEP':10,
+                        'A-OCT':11,'A-NOV':12}
+    boundary_month=hydroyear_boundary[hydroyear]
+    
+    #calculate for each year
+    yearly_data=[]
+    for year in years:
+        starts, ends = (np.array([start_date for start_date, end_date in zip(start_dates, end_dates) if start_date.year == year or end_date.year == year]),
+                        np.array([end_date for start_date, end_date in zip(start_dates, end_dates) if start_date.year == year or end_date.year == year]))
+    
+        boundary = datetime.date(year, boundary_month, 1)
+        
+        year_length = 366 if calendar.isleap(year) else 365
+
+        lengths_total_season = [float(abs((end - start).days)) for start, end in zip(starts, ends)] #length of season
+        
+        lengths_within_year = np.array([min(year_length, abs((boundary - end).days)) - abs(min(0, (boundary - start).days)) for start, end in zip(starts, ends)])
+    
+        fractions = lengths_within_year / lengths_total_season #fraction of season
+        if how == 'sum':
+            y=np.sum(np.array(
+                    [ts[start_dates == start].values[0] for start in starts])\
+                    * fractions)
+        elif how=='mean':
+            y=np.average(np.array(
+                    [ts[start_dates == start].values[0] for start in starts]),
+                         weights = fractions)
+        yearly_data.append(y)
+        
+    result=pd.DataFrame({ #
+            'year':years,
+             name:np.array(yearly_data)
+            })
+    result=result.set_index('year')
+    if output is not None:
+        result.to_csv(output,sep=';')  
+    return result
+#%% Sheet 4 functions
+
+def calc_sw_supply_fraction_by_LU(lu_nc,aeisw_tif,
                                   output=None,
                                   chunksize=None):
     '''
@@ -386,7 +651,7 @@ def calc_sw_supply_fraction_by_LU(lu_nc,aeisw_nc,
         sw_supply_fraction = xr.where(
                 LU.isin(classes),fraction,sw_supply_fraction)        
     # update fraction with aeisw (GMIA)
-    aeisw=cf.open_nc(aeisw_nc,chunksize=chunksize,layer=0)
+    aeisw=gis.OpenAsArray(aeisw_tif,nan_values=True)
     aeisw=aeisw/100 #convert percentage to fraction
     aeisw = xr.where(xr.isnan(aeisw),
                      aeisw.mean(skipna=True),
@@ -416,15 +681,48 @@ def calc_sw_supply_fraction_by_LU(lu_nc,aeisw_nc,
     sw_supply_fraction.load().to_netcdf(output,encoding=encoding)
     print('Save monthly LU datacube as {0}'.format(output))
     del LU
-    return sw_supply_fraction
+    return output
 
-def calc_sw_return_fraction():
+def calc_sw_return_fraction(sroincr_nc,percincr_nc,
+                            output=None,
+                            chunksize=None):
     '''
+    Calculate surface water return fraction
     DTOT = DSRO + DPERC
     SWRETFRAC = LU * 0
     SWRETFRAC[DTOT > 0] = (DSRO/(DTOT))[DTOT > 0]
+    
+    sroincr_nc: str
+        path to incremental surface runoff dataset
+    percinicr_nc: str
+        path to incremental percolation dataset
+    output: str
+        path to output dataset 
     '''
-    return
+    sroincr=cf.open_nc(sroincr_nc,chunksize=chunksize,layer=0)
+    percincr=cf.open_nc(percincr_nc,chunksize=chunksize,layer=0)
+    #calculate sw return fraction
+    dtot=sroincr+percincr
+    sw_return_frac=xr.where(dtot>0,sroincr/dtot,0)
+    #add attributes
+    sw_return_frac.name='sw_return_fraction'
+    sw_return_frac=sw_return_frac.transpose('time','latitude','longitude')
+    sw_return_frac.attrs={'units':'-',
+                              'source':'SROincr/(SROincr+PERCincr)',
+                              'quantity':'sw_return_fraction'
+                                  }   
+    #save output
+    if output is None:
+        output=os.path.join(os.path.dirname(sroincr_nc),'sw_return_fraction.nc')
+    comp = dict(zlib=True, 
+                complevel=9, 
+                least_significant_digit=2, 
+                chunksizes=chunksize)
+    sw_return_frac.load().to_netcdf(output,
+                     encoding={'sw_return_fraction':comp})   
+    sroincr.close()
+    percincr.close()    
+    return output
 
 
 def calc_nonconsumed_supply(supply_nc,etincr_nc,
@@ -457,12 +755,13 @@ def calc_nonconsumed_supply(supply_nc,etincr_nc,
                 chunksizes=chunksize)
     non_consumed.load().to_netcdf(output,
                      encoding={'non_consumed_supply':comp})       
-    return non_consumed
+    return output
 
 def calc_land_surface_water_demand(lai_nc, etref_nc, p_nc, lu_nc, 
                 output=None,chunksize=None):
     '''
     calculate water demand of land surface based on LAI
+    
     lai_nc: str
         path to LAI netcdf file
     etref_nc: str
@@ -511,13 +810,14 @@ def calc_land_surface_water_demand(lai_nc, etref_nc, p_nc, lu_nc,
                 chunksizes=chunksize)
     demand.load().to_netcdf(output,
                      encoding={'land_surface_water_demand':comp})           
-    return demand
+    return output
 
-def calc_residential_water_consumption(population_tif,area_tif,
-                               lu_nc,blue_water_nc,
-                               wcpc=100,flow_type='demand',
-                               chunksize=None,
-                               output=None):
+def calc_residential_water_consumption(population_tif,
+                                       basin_mask,
+                                       lu_nc,
+                                       wcpc=100,flow_type='demand',
+                                       chunksize=None,
+                                       output=None):
     '''
     calculate domestic water demand or supply based on population map and
     water consumption per capita and add values to demand and supply dataset.
@@ -535,9 +835,8 @@ def calc_residential_water_consumption(population_tif,area_tif,
     '''
     # Read input data
     population=gis.OpenAsArray(population_tif,nan_values=True)
-    area=gis.OpenAsArray(area_tif,nan_values=True)
+    area=gis.MapPixelAreakm(basin_mask)
     lu=cf.open_nc(lu_nc,chunksize=chunksize,layer=0)
-    blue_water=cf.open_nc(blue_water_nc,chunksize=chunksize,layer=0)
     #get residential classes
     sheet4_lucs=gd.get_sheet4_6_classes() 
     classes = sheet4_lucs['Residential']    
@@ -547,12 +846,12 @@ def calc_residential_water_consumption(population_tif,area_tif,
     residential_wc = wcpc * population * 10**-6 / area
     
     # Calculate number days per month
-    months=pd.to_datetime(np.array(blue_water.time))
+    months=pd.to_datetime(np.array(lu.time))
     ndays=np.array(
             [calendar.monthrange(date.year, 
                                  date.month)[1] for date in months])
     ndays_da = xr.DataArray(ndays, dims=["time"])
-    ndays_da['time']=blue_water['time']
+    ndays_da['time']=lu['time']
     
     # Calculate WC per pixel in [mm/month]
     mask=xr.where(lu.isin(classes),1,0)
@@ -568,17 +867,17 @@ def calc_residential_water_consumption(population_tif,area_tif,
                     1.0,#True
                     0.0) #False
     residential_wc+=nan_residential_wc*mean #fill nan residential_wc w/ mean 
-    residential_wc+=blue_water*0 #replace nan in blue_water     
+    residential_wc+=lu*0 #replace nan in blue_water     
     # Save total_blue_water
     residential_wc=residential_wc.transpose('time',
                                                  'latitude','longitude')
-    residential_wc.name=blue_water.name
-    residential_wc.attrs={'units':blue_water.attrs['units'],
+    residential_wc.name='residential_'+flow_type
+    residential_wc.attrs={'units':'mm/month',
                       'source':'WCPC*Population/area',
                       'quantity':'residential water {0}'.format(flow_type)
                                   }
     if output is None:
-        output=os.path.join(os.path.dirname(blue_water_nc),
+        output=os.path.join(os.path.dirname(lu_nc),
                                      'residential_{0}.nc'.format(
                                              flow_type))
     comp = dict(zlib=True, 
@@ -590,15 +889,15 @@ def calc_residential_water_consumption(population_tif,area_tif,
     residential_wc.load().to_netcdf(output,
                          encoding={residential_wc.name:comp})    
     #close files and return results
-    blue_water.close()
     lu.close()
     del population
     del area
     return output
 
 #%% Sheet 5 functions
-def calc_sw_from_wp(sro,sroincr,bf,supply_sw,
-                         inflow=None,outflow=True,plot=False):
+def calc_sw_from_wp(sro,sroincr,bf,supply_sw,output=None,
+                         inflow=None,outflow=True,plot=False,
+                         unit_conversion=1):
     '''
     calculate surface water outflow and storage from pixel-based model results
     In DataFrame format
@@ -627,6 +926,14 @@ def calc_sw_from_wp(sro,sroincr,bf,supply_sw,
     index=available_sw.index
     discharge=pd.DataFrame(data=discharge,index=index,columns=['Discharge'])
     dS_sw=pd.DataFrame(data=dS_sw,index=index,columns=['dS_sw'])
+    discharge/=unit_conversion
+    dS_sw/=unit_conversion
+    if output is not None:
+        discharge_output=output.format('discharge')
+        dS_output=output.format('dS_sw')
+        discharge.to_csv(discharge_output,sep=';')
+        dS_sw.to_csv(dS_output,sep=';')
+        return discharge_output,dS_output
     return discharge,dS_sw
 
 def distribute_available_sw(available_sw,outflow=True):
@@ -698,9 +1005,3 @@ def distribute_available_sw(available_sw,outflow=True):
     return discharge,dS
 
 #%% Sheet 6 functions
-
-def calc_recharge():
-    '''
-    recharge = percolation - incremental percolation
-    '''
-    return

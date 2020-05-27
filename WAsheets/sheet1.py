@@ -5,19 +5,22 @@ Created on Fri Apr 24 17:06:08 2020
 @author: ntr002
 """
 import os
-import sys
 import csv
 import pandas as pd
 from . import calculate_flux as cf
 from . import get_dictionaries as gd
+from . import hydroloop as hl
 
-def main(BASIN,unit_conversion=1):
+def main(BASIN,unit_conversion=1000):
     '''
     unit_conversion: 1 for TCM, 1000 for MCM, 1e6 for BCM or km3)
     '''
-    requirements=gd.get_sheet_requirements(1)    
-    if not cf.check_requirement_sheet(BASIN,requirements):
-        sys.exit("ERROR: Data requirements for Sheet 1 are not fulfilled")
+    #check requirements
+#    requirements=gd.get_sheet_requirements(1)    
+#    if not cf.check_requirement_sheet(BASIN,requirements):
+#        print("ERROR: Data requirements for Sheet 1 are not fulfilled")
+#        return None
+    #get sheet 1 dictionary
     lu_dictionary=gd.get_sheet1_classes()  
     
     folder=os.path.join(BASIN['output_folder'],'csv','timeseries')        
@@ -26,39 +29,39 @@ def main(BASIN,unit_conversion=1):
     output_file=os.path.join(folder,'sheet1_{0}.csv')
     
     #Calulate yearly data to fill in Sheet 1
-    df_P=cf.calc_flux_per_basin(BASIN['data_cube']['p_yearly'], 
+    df_P=cf.calc_flux_per_basin(BASIN['data_cube']['monthly']['p'], 
                                 BASIN['gis_data']['basin_mask'],
                                 chunksize=BASIN['chunksize'],
-                                output=output_file.format('Basin_P'),
+                                output=output_file.format('basin_p_monthly'),
                                 quantity='volume')
-    df_ET=cf.calc_flux_per_basin(BASIN['data_cube']['et_yearly'], 
+    df_ET=cf.calc_flux_per_basin(BASIN['data_cube']['monthly']['et'], 
                                 BASIN['gis_data']['basin_mask'], 
                                 chunksize=BASIN['chunksize'],
-                                output=output_file.format('Basin_ET'),
+                                output=output_file.format('basin_p_monthly'),
                                 quantity='volume')
-    df_ETrain=cf.calc_flux_per_LU_class(BASIN['data_cube']['etrain_yearly'], 
+    df_ETrain=cf.calc_flux_per_LU_class(BASIN['data_cube']['monthly']['etrain'], 
                              BASIN['gis_data']['lu_map'], 
                              BASIN['gis_data']['basin_mask'],
                      chunksize=BASIN['chunksize'], #option to process in chunks
-                     output=output_file.format('Basin_ETrain'), 
+                     output=output_file.format('basin_etrain_monthly'), 
                      #option to save output as csv                     
                      lu_dictionary=lu_dictionary, #calc for LU categories
                      quantity='volume')
     
-    df_ETincr=cf.calc_flux_per_LU_class(BASIN['data_cube']['etincr_yearly'], 
+    df_ETincr=cf.calc_flux_per_LU_class(BASIN['data_cube']['monthly']['etincr'], 
                              BASIN['gis_data']['lu_map'], 
                              BASIN['gis_data']['basin_mask'],
                      chunksize=BASIN['chunksize'], #option to process in chunks
-                     output=output_file.format('Basin_ETincr'), 
+                     output=output_file.format('basin_etincr_monthly'), 
                      #option to save output as csv                     
                      lu_dictionary=lu_dictionary, #calc for LU categories
                      quantity='volume')
     
     sheet_folder=os.path.join(BASIN['output_folder'],'csv','sheet1') 
-    if not os.path.exists(folder):
+    if not os.path.exists(sheet_folder):
         os.makedirs(sheet_folder) #create sheet1 folder       
     #Fill in Sheet 1 csv
-    
+    monthly_csvs=[]
     for i in range(len(df_P)):
         results=dict()
         results['p_advection']=df_P[df_P.columns[0]].values[i]/unit_conversion
@@ -77,13 +80,14 @@ def main(BASIN,unit_conversion=1):
         +df_ETincr[df_ETincr.columns[1]].values[i]
         +df_ETincr[df_ETincr.columns[2]].values[i])/unit_conversion
         #year value
-        year=df_ETrain.index[i]
+        year=df_P.index[i].year
+        month=df_P.index[i].month
         #Read time-series input
         ts_data_sheet1=['q_in_sw', 'q_in_gw', 'q_in_desal',
                         'q_outflow','q_out_sw','q_out_gw']
         for key in ts_data_sheet1:
-            if ((key in BASIN['ts_data'].keys()) & (BASIN['ts_data'][key] is not None)):
-                df=pd.read_csv(BASIN['ts_data'][key],sep=';',index_col=0)
+            if BASIN['ts_data'][key]['basin'] is not None:
+                df=pd.read_csv(BASIN['ts_data']['basin'][key],sep=';',index_col=0)
                 results[key]=df[df.columns[0]].values[i]
             else:
                 results[key]=0.
@@ -103,10 +107,17 @@ def main(BASIN,unit_conversion=1):
             results['q_outflow']=calc_water_balance_residual(P,ET,
                    Qin=Qin,dS=results['dS'])
         #write sheet 1 csv
-        output_fh=os.path.join(sheet_folder,'sheet1_{0}.csv'.format(year))
+        output_fh=os.path.join(sheet_folder,'sheet1_{0}_{1}.csv'.format(year,month))
         create_sheet1_csv(results, output_fh) #write results to sheet1 csv
-    
-    return True
+        monthly_csvs.append(output_fh)
+    ##calculate yearly sheets
+    yearly_folder=os.path.join(sheet_folder,'yearly') 
+    if not os.path.exists(yearly_folder):
+        os.makedirs(yearly_folder) #create sheet1 folder  
+    yearly_csvs=hl.calc_yearly_sheet(monthly_csvs,
+                                     yearly_folder,
+                                     hydroyear=BASIN['hydroyear'])
+    return yearly_csvs
 
 def calc_water_balance_residual(P,ET,dS=None,Qin=None,Qout=None):
     if Qin is not None:

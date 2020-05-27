@@ -5,21 +5,21 @@ Created on Fri Apr 24 17:10:28 2020
 @author: ntr002
 """
 import os
-import sys
 import csv
-import pandas as pd
 import numpy as np
 from . import calculate_flux as cf
 from . import get_dictionaries as gd
+from . import hydroloop as hl
 
-def main(BASIN,unit_conversion=1):
+def main(BASIN,unit_conversion=1000):
     '''
     unit_conversion: 1 for TCM, 1000 for MCM, 1e6 for BCM or km3)
     '''
     #check requirements
-    requirements=gd.get_sheet_requirements(2)    
-    if not cf.check_requirement_sheet(BASIN,requirements):
-        sys.exit("ERROR: Data requirements for Sheet 2 are not fulfilled")
+#    requirements=gd.get_sheet_requirements(2)    
+#    if not cf.check_requirement_sheet(BASIN,requirements):
+#        print("ERROR: Data requirements for Sheet 2 are not fulfilled")
+#        return None
     #create folder to save intermetidate data
     folder=os.path.join(BASIN['output_folder'],
                         'csv','timeseries')        
@@ -28,42 +28,44 @@ def main(BASIN,unit_conversion=1):
     output_file=os.path.join(folder,'sheet2_{0}.csv')
     
     #Calulate yearly data to fill in Sheet 2    
-    ET=cf.calc_flux_per_LU_class(BASIN['data_cube']['et_yearly'], 
+    ET=cf.calc_flux_per_LU_class(BASIN['data_cube']['monthly']['et'], 
                          BASIN['gis_data']['lu_map'], 
                          BASIN['gis_data']['basin_mask'],
                  chunksize=BASIN['chunksize'], #option to process in chunks
-                 output=output_file.format('ET_LU'), 
+                 output=output_file.format('lu_et_monthly'), 
                  #option to save output as csv                  
                  quantity='volume')
-    E=cf.calc_flux_per_LU_class(BASIN['data_cube']['e_yearly'], 
+    E=cf.calc_flux_per_LU_class(BASIN['data_cube']['monthly']['e'], 
                          BASIN['gis_data']['lu_map'], 
                          BASIN['gis_data']['basin_mask'],
                  chunksize=BASIN['chunksize'], #option to process in chunks
-                 output=output_file.format('T_LU'), 
+                 output=output_file.format('lu_e_monthly'), 
                  #option to save output as csv                     
                  quantity='volume')
-    T=cf.calc_flux_per_LU_class(BASIN['data_cube']['t_yearly'], 
+    T=cf.calc_flux_per_LU_class(BASIN['data_cube']['monthly']['t'], 
                          BASIN['gis_data']['lu_map'], 
                          BASIN['gis_data']['basin_mask'],
                  chunksize=BASIN['chunksize'],
-                 output=output_file.format('T_LU'),                               
+                 output=output_file.format('lu_t_monthly'),                               
                  quantity='volume')
-    I=cf.calc_flux_per_LU_class(BASIN['data_cube']['i_yearly'], 
+    I=cf.calc_flux_per_LU_class(BASIN['data_cube']['monthly']['i'], 
                          BASIN['gis_data']['lu_map'], 
                          BASIN['gis_data']['basin_mask'],
                  chunksize=BASIN['chunksize'],
-                 output=output_file.format('I_LU'),               
+                 output=output_file.format('lu_i_monthly'),               
                  quantity='volume') 
     sheet_folder=os.path.join(BASIN['output_folder'],'csv','sheet2') 
-    if not os.path.exists(folder):
+    if not os.path.exists(sheet_folder):
         os.makedirs(sheet_folder) #create sheet1 folder 
         
     #Fill data in Sheet 2 csv
+    monthly_csvs=[]
     for i in range(len(ET)):
-        year=ET.index[i]
+        year=ET.index[i].year
+        month=ET.index[i].month
         results=dict()
         results['LULC']=np.array(
-                [float(s.split('-')[0]) for s in ET.columns])
+                [float(s) for s in ET.columns])
         results['ET']=np.array(
                 (ET.iloc[i].values/unit_conversion))                
         results['E']=np.array(
@@ -73,11 +75,19 @@ def main(BASIN,unit_conversion=1):
         results['I']=np.array(
                 I.iloc[i].values/unit_conversion)
         #write sheet 2 csv
-        output_fh=os.path.join(sheet_folder,'sheet2_{0}.csv'.format(year))
-        create_sheet2_csv(year,results,output_fh)    
-    return True
+        output_fh=os.path.join(sheet_folder,'sheet2_{0}_{1}.csv'.format(year,month))
+        create_sheet2_csv(results,output_fh) 
+        monthly_csvs.append(output_fh)
+    ##calculate yearly sheets
+    yearly_folder=os.path.join(sheet_folder,'yearly') 
+    if not os.path.exists(yearly_folder):
+        os.makedirs(yearly_folder) #create sheet1 folder  
+    yearly_csvs=hl.calc_yearly_sheet(monthly_csvs,
+                                     yearly_folder,
+                                     hydroyear=BASIN['hydroyear'])
+    return yearly_csvs
         
-def create_sheet2_csv(year,results,output_fh):
+def create_sheet2_csv(results,output_fh):
     """
     Create the csv-file needed to plot sheet 1.
     
