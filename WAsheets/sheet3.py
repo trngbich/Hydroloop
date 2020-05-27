@@ -35,13 +35,19 @@ def main(BASIN,unit_conversion=1000):
     data={}
     yearly_data={}
     for key in ['etincr','etrain','ndm','ndm_wp']:
+        quantity='volume'
+        if key=='ndm':
+            quantity='depth'
+        
         data[key]=cf.calc_flux_per_LU_class(
                      BASIN['data_cube']['monthly'][key],
                      BASIN['data_cube']['monthly']['lu'],
                      BASIN['gis_data']['basin_mask'],
                      output=output_file.format(
                              '{0}_monthly'.format(key)),
-                     chunksize=BASIN['chunksize'])
+                     chunksize=BASIN['chunksize'],
+                     quantity=quantity)
+    
     #calculate seasons
     data_years=[]
     for crop in BASIN['params']['crops']:
@@ -62,12 +68,18 @@ def main(BASIN,unit_conversion=1000):
                   hydroyear=BASIN['hydroyear'],
                   how='mean')
                df*=0.1 #convert 0.1kg/m3 to kg/m3
+           elif key=='ndm':
+               df=hl.aggregate_year_from_season(df_season,
+                  output=output_file.format('{0}_{1}_yearly'.format(crop,key)),
+                  hydroyear=BASIN['hydroyear'],
+                  how='sum') #total kg/ha
+                            
            else:
                df=hl.aggregate_year_from_season(df_season,
                   output=output_file.format('{0}_{1}_yearly'.format(crop,key)),
                   hydroyear=BASIN['hydroyear'],
                   how='sum')
-               df/=unit_conversion
+               df/=unit_conversion  #convert TCM to volume unit
            #save data
            yearly_data[crop][key]=df
            data_years.append(np.array(df.index)) #append data years

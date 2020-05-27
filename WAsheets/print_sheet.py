@@ -168,7 +168,7 @@ def print_sheet1(basin, period, units, data, output, template=False , smart_unit
 
     # Calculations & modify svg
     if not template:        
-        svg_template_path = get_template('sheet1',
+        svg_template_path = get_template('sheet_1',
                                          template_folder='Default')
     else:
         svg_template_path = os.path.abspath(template)
@@ -351,7 +351,7 @@ def print_sheet1(basin, period, units, data, output, template=False , smart_unit
                list(xml_txt_box)[0].text = '-'
 
 #    # Export svg to pdf
-    tempout_path = output.replace('.pdf', '_temporary.svg')
+    tempout_path = output.replace('.png', '_temporary.svg')
     tree.write(tempout_path)    
     cairosvg.svg2pdf(url=tempout_path, write_to=output)    
     os.remove(tempout_path)
@@ -1072,8 +1072,8 @@ def print_sheet2(basin, period, units, data, output, template=False,
 
     # Calculations & modify svg
     if not template:
-        path = os.path.dirname(os.path.abspath(__file__))
-        svg_template_path = os.path.join(path, 'svg', 'sheet_2.svg')
+        svg_template_path = get_template('sheet_2',
+                                         template_folder='Default')
     else:
         svg_template_path = os.path.abspath(template)
 
@@ -1391,7 +1391,7 @@ def print_sheet2(basin, period, units, data, output, template=False,
     xml_txt_box.getchildren()[0].text = '%.1f' % total_lei
 
     # Export svg to png
-    tempout_path = output.replace('.pdf', '_temporary.svg')
+    tempout_path = output.replace('.png', '_temporary.svg')
     tree.write(tempout_path)    
     cairosvg.svg2pdf(url=tempout_path, write_to=output)    
     os.remove(tempout_path)
@@ -1507,8 +1507,8 @@ def print_sheet3(basin, period, units, data, output, template=False):
                         (df.TYPE == "IRRI")].WATER_PRODUCTIVITY)
     # Calculations & modify svgs
     if not template:
-        path = os.path.dirname(os.path.abspath(__file__))
-        svg_template = os.path.join(path, 'svg', 'sheet_3.svg')
+        svg_template = get_template('sheet_3',
+                                         template_folder='Default')
     else:
         svg_template = os.path.abspath(template)
     tree = ET.parse(svg_template)
@@ -1772,7 +1772,7 @@ def print_sheet3(basin, period, units, data, output, template=False):
 
 
     # Export svg to png
-    tempout_path = output.replace('.pdf', '_temporary.svg')
+    tempout_path = output.replace('.png', '_temporary.svg')
     tree.write(tempout_path)    
     cairosvg.svg2pdf(url=tempout_path, write_to=output[0])    
     os.remove(tempout_path)
@@ -2221,9 +2221,11 @@ def print_sheet4(basin, period, units, data, output, template=False, margin = 0.
 
     # Calculations & modify svgs
     if not template:
-        path = os.path.dirname(os.path.abspath(__file__))
-        svg_template_path_1 = os.path.join(path, 'svg', 'sheet_4_part1.svg')
-        svg_template_path_2 = os.path.join(path, 'svg', 'sheet_4_part2.svg')
+        svg_template_path_1 = get_template('sheet_4_part1',
+                                         template_folder='Default')
+        svg_template_path_2 = get_template('sheet_4_part2',
+                                         template_folder='Default')
+
     else:
         svg_template_path_1 = os.path.abspath(template[0])
         svg_template_path_2 = os.path.abspath(template[1])
@@ -2276,13 +2278,13 @@ def print_sheet4(basin, period, units, data, output, template=False, margin = 0.
 
     # Export svg to png    
     if data[0] is not None:
-        tempout_path = output[0].replace('.pdf', '_temporary.svg')
+        tempout_path = output[0].replace('.png', '_temporary.svg')
         tree1.write(tempout_path)
         cairosvg.svg2pdf(url=tempout_path, write_to=output[0])
         os.remove(tempout_path)
        
     if data[1] is not None:
-        tempout_path = output[1].replace('.pdf', '_temporary.svg')
+        tempout_path = output[1].replace('.png', '_temporary.svg')
         tree2.write(tempout_path)
         cairosvg.svg2pdf(url=tempout_path, write_to=output[1])
         os.remove(tempout_path)
@@ -2294,8 +2296,11 @@ def print_sheet5(basin, sb_codes, period, units, data, output, template=False, s
         scale_test = np.nanmax(df['VALUE'].values)
         scale = scale_factor(scale_test)
         df['VALUE'] *= 10**scale
-
-    svg_template_path = os.path.abspath(template)
+    if not template:
+        svg_template_path=get_template('sheet_5',
+                                         template_folder='Default')
+    else:
+        svg_template_path = os.path.abspath(template)
 
     tree = ET.parse(svg_template_path)
 
@@ -2363,7 +2368,7 @@ def print_sheet5(basin, sb_codes, period, units, data, output, template=False, s
         xml_txt_box = tree.findall('''.//*[@id='{0}']'''.format(cell_id))[0]
         xml_txt_box[0].text = '%.1f' %(df_sb.VALUE)
 
-    tempout_path = output.replace('.pdf', '_temporary.svg')
+    tempout_path = output.replace('.png', '_temporary.svg')
     tree.write(tempout_path)    
     cairosvg.svg2pdf(url=tempout_path, write_to=output)    
     os.remove(tempout_path)
@@ -2521,8 +2526,8 @@ def print_sheet6(basin, period, unit, data, output, template=False, decimal = 1,
         p1[key] = np.round(value, decimals = decimal)
         
     if not template:
-        path = os.path.dirname(os.path.abspath(__file__))
-        svg_template_path_1 = os.path.join(path, 'svg', 'sheet_6.svg')
+        svg_template_path_1 = get_template('sheet_6',
+                                         template_folder='Default')
     else:
         svg_template_path_1 = os.path.abspath(template)
     
@@ -2549,7 +2554,7 @@ def print_sheet6(basin, period, unit, data, output, template=False, decimal = 1,
             xml_txt_box.getchildren()[0].text = '-'
     
     # Export svg to png    
-    tempout_path = output.replace('.pdf', '_temporary.svg')
+    tempout_path = output.replace('.png', '_temporary.svg')
     tree1.write(tempout_path)    
     cairosvg.svg2pdf(url=tempout_path, write_to=output)    
 #    os.remove(tempout_path)

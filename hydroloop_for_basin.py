@@ -298,7 +298,7 @@ for sheet2_csv in sheet2_yearly_csvs:
 for sheet3_csv in sheet3_yearly_csvs:
     period=os.path.basename(sheet3_csv).split('.')[0].split('_')[-1]
     output=sheet3_csv.replace('.csv','.png')
-    ps.print_sheet3(BASIN['name'],period=period,output=output,units='MCM',sheet3_csv)
+    ps.print_sheet3(BASIN['name'],period=period,output=output,units=['MCM','kg/ha','kg/m3'],sheet3_csv)
     
 for sheet4_csv in sheet4_yearly_csvs:
     period=os.path.basename(sheet4_csv).split('.')[0].split('_')[-1]
