@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 import os
-import GIS_functions as gis
+from . import GIS_functions as gis
 
 def open_nc(input_nc, chunksize=None, layer=None):
     if chunksize is None:
@@ -103,7 +103,7 @@ def resample_to_monthly_dataset(yearly_nc, sample_nc,
     dts1.close()
     dts2.close()
     print('Save monthly LU datacube as {0}'.format(output))
-    return dts
+    return output
 
 def calc_flux_per_basin(dts_nc, basin_mask, 
                         chunksize=None,output=None,quantity='volume'):
@@ -150,12 +150,13 @@ def calc_flux_per_basin(dts_nc, basin_mask,
 
 
 def calc_flux_per_LU_class(dts_nc, lu_nc, basin_mask,
-                     chunksize=None, #option to process in chunks
-                     output=None, #option to save output as csv                     
-                     lu_dictionary=None, #option to calculate by LU category
-                     quantity='volume'): #option to calculate L or L^3
+                     chunksize=None, 
+                     output=None,            
+                     lu_dictionary=None, 
+                     quantity='volume'):
     '''
     calculate flux per LU class in WA+ LU map
+    
     input_nc: str
         path to yearly dataset (NetCDF) (in mm)
     lu_nc: str
@@ -166,11 +167,18 @@ def calc_flux_per_LU_class(dts_nc, lu_nc, basin_mask,
             path to basin mask (GeoTIFF)
         np.array/xr.DataArray 
             pixel area of basin (in km2)
+    chunksize: list
+        [t,x,y] chunksize of datacube
     output: str
         path to output (csv)
         default is None 
     quantity: str
-        volume or depth
+        'volume': multiplied with pixel area (km2). 
+                 if variable unit is mm, 
+                 the result will be in 10^3 m3 or 10^-6 km3
+                 if the variable unit is kg/ha,
+                 the result will be in 10^2 kg
+        'depth': keep the variable unit
     
     return
         dataframe (in TCM)
@@ -189,26 +197,22 @@ def calc_flux_per_LU_class(dts_nc, lu_nc, basin_mask,
             area_mask=area_map*basin
         else:
             area_mask=basin_mask 
-        dts_m=dts*area_mask #flux = depth*area   
-        dts_y=dts_m.groupby('time.year').sum(dim=['time'],skipna=False)
+        dts_m=dts*area_mask #flux = depth*area
         method='sum'
         
     elif quantity=='depth':
         dts_m=dts*basin
-        dts_y=dts_m.groupby('time.year').sum(dim=['time'],skipna=False)
         method='mean'
         
-    n_lu=len(lu.time) #number of landuse map
+#    n_lu=len(lu.time) #number of landuse map
     
-    if n_lu==1: #single landuse map
-        LU=lu[0] #get single landuse map            
-    elif n_lu==len(dts_y.time): #dynamic yearly landuse  maps    
-        LU=lu.groupby('time.year').first()
+#    if n_lu==1: #single landuse map
+#        LU=lu[0] #get single landuse map            
     
     if lu_dictionary is None:
-        df=aggregate_by_lu_unique(dts_y,LU,how=method)
+        df=aggregate_by_lu_unique(dts_m,lu,how=method)
     elif type(lu_dictionary) is dict:
-        df=aggregate_by_lu_dictionary(dts_y,LU,lu_dictionary,
+        df=aggregate_by_lu_dictionary(dts_m,lu,lu_dictionary,
                                       how=method)
         
     if output is not None: #export result if output path is defined
@@ -236,9 +240,11 @@ def aggregate_by_lu_unique(dts,LU,how='sum'):
                     'latitude',
                     'longitude'
                     ]).to_dataframe() #mean of all pixels in lu class          
-        df_lu=df_lu.drop(columns='time')        
-        df_lu.columns=['{0}-{1}'.format(lucl,
-                       col) for col in df_lu.columns] #rename column     
+        if len(df_lu.columns)>1:      
+            df_lu.columns=['{0}-{1}'.format(lucl,
+                           col) for col in df_lu.columns] #rename column with variable   
+        else:
+            df_lu.columns=['{0}'.format(lucl) for col in df_lu.columns] #rename column             
         data.append(df_lu) #append data list by lu class
     df=pd.concat(data, axis=1) #merge all results into 1 dataframe
     return df
@@ -260,9 +266,11 @@ def aggregate_by_lu_dictionary(dts,LU,lu_dictionary,how='sum'):
                     'latitude',
                     'longitude'
                     ]).to_dataframe() #mean of all pixels in lu class        
-        df_lu=df_lu.drop(columns='time')        
-        df_lu.columns=['{0}-{1}'.format(key,
-                       col) for col in df_lu.columns] #rename column
+        if len(df_lu.columns)>1:      
+            df_lu.columns=['{0}-{1}'.format(key,
+                           col) for col in df_lu.columns] #rename column with variable   
+        else:
+            df_lu.columns=['{0}'.format(key) for col in df_lu.columns] #rename column             
         data.append(df_lu) #append data list by lu class
     df=pd.concat(data, axis=1) #merge all results into 1 dataframe
     return df
