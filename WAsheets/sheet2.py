@@ -29,27 +29,27 @@ def main(BASIN,unit_conversion=1000):
     
     #Calulate yearly data to fill in Sheet 2    
     ET=cf.calc_flux_per_LU_class(BASIN['data_cube']['monthly']['et'], 
-                         BASIN['gis_data']['lu_map'], 
+                         BASIN['data_cube']['monthly']['lu'], 
                          BASIN['gis_data']['basin_mask'],
                  chunksize=BASIN['chunksize'], #option to process in chunks
                  output=output_file.format('lu_et_monthly'), 
                  #option to save output as csv                  
                  quantity='volume')
     E=cf.calc_flux_per_LU_class(BASIN['data_cube']['monthly']['e'], 
-                         BASIN['gis_data']['lu_map'], 
+                         BASIN['data_cube']['monthly']['lu'], 
                          BASIN['gis_data']['basin_mask'],
                  chunksize=BASIN['chunksize'], #option to process in chunks
                  output=output_file.format('lu_e_monthly'), 
                  #option to save output as csv                     
                  quantity='volume')
     T=cf.calc_flux_per_LU_class(BASIN['data_cube']['monthly']['t'], 
-                         BASIN['gis_data']['lu_map'], 
+                         BASIN['data_cube']['monthly']['lu'], 
                          BASIN['gis_data']['basin_mask'],
                  chunksize=BASIN['chunksize'],
                  output=output_file.format('lu_t_monthly'),                               
                  quantity='volume')
     I=cf.calc_flux_per_LU_class(BASIN['data_cube']['monthly']['i'], 
-                         BASIN['gis_data']['lu_map'], 
+                         BASIN['data_cube']['monthly']['lu'], 
                          BASIN['gis_data']['basin_mask'],
                  chunksize=BASIN['chunksize'],
                  output=output_file.format('lu_i_monthly'),               
@@ -60,20 +60,21 @@ def main(BASIN,unit_conversion=1000):
         
     #Fill data in Sheet 2 csv
     monthly_csvs=[]
-    for i in range(len(ET)):
-        year=ET.index[i].year
-        month=ET.index[i].month
+    for i in range(len(E)):
+        t_index=E.index[i]
+        year=t_index.year
+        month=t_index.month
         results=dict()
         results['LULC']=np.array(
                 [float(s) for s in ET.columns])
         results['ET']=np.array(
-                (ET.iloc[i].values/unit_conversion))                
+                (ET.loc[t_index].values/unit_conversion))                
         results['E']=np.array(
-                E.iloc[i].values/unit_conversion)
+                E.loc[t_index].values/unit_conversion)
         results['T']=np.array(
-                T.iloc[i].values/unit_conversion)
+                T.loc[t_index].values/unit_conversion)
         results['I']=np.array(
-                I.iloc[i].values/unit_conversion)
+                I.loc[t_index].values/unit_conversion)
         #write sheet 2 csv
         output_fh=os.path.join(sheet_folder,'sheet2_{0}_{1}.csv'.format(year,month))
         create_sheet2_csv(results,output_fh) 
