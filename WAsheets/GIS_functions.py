@@ -131,7 +131,7 @@ def CreateGeoTiff(fh, Array, driver, NDV, xsize, ysize, GeoT, Projection, explic
 
 
 def MatchProjResNDV(source_file, target_fhs, output_dir, resample = 'near', dtype = 'float32', scale = None, ndv_to_zero = False):
-    """
+    '''
     Matches the projection, resolution and no-data-value of a list of target-files
     with a source-file and saves the new maps in output_dir.
     
@@ -154,7 +154,7 @@ def MatchProjResNDV(source_file, target_fhs, output_dir, resample = 'near', dtyp
     -------
     output_files : ndarray 
         Filehandles of the created files.
-    """
+    '''
     dst_info=gdal.Info(gdal.Open(source_file),format='json')
     output_files = np.array([])
     if not os.path.exists(output_dir):
