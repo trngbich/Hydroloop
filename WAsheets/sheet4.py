@@ -65,12 +65,12 @@ def main(BASIN,unit_conversion=1000):
             results['SUPPLY_SURFACEWATER'][lu]=data['supply_sw'][lu].iloc[i]              
             results['SUPPLY_GROUNDWATER'][lu]=data['supply_gw'][lu].iloc[i]   
             results['CONSUMED_ET'][lu]=data['etincr'][lu].iloc[i]
-            results['CONSUMED_OTHER'][lu]=np.nan
-            results['NON_CONVENTIONAL_ET'][lu]=np.nan
+            results['CONSUMED_OTHER'][lu]=0.0
+            results['NON_CONVENTIONAL_ET'][lu]=0.0
             results['RECOVERABLE_SURFACEWATER'][lu]=data['return_sw'][lu].iloc[i]
             results['RECOVERABLE_GROUNDWATER'][lu]=data['return_gw'][lu].iloc[i]
-            results['NON_RECOVERABLE_SURFACEWATER'][lu]=np.nan
-            results['NON_RECOVERABLE_GROUNDWATER'][lu]=np.nan
+            results['NON_RECOVERABLE_SURFACEWATER'][lu]=0.0
+            results['NON_RECOVERABLE_GROUNDWATER'][lu]=0.0
             results['DEMAND'][lu]=data['demand'][lu].iloc[i]
 
         #write sheet 4 csv
