@@ -46,12 +46,13 @@ def main(BASIN,unit_conversion=1):
                 )
         data[variable]=df/unit_conversion 
         
-    data['bf']=cf.calc_flux_per_basin(
+    df=cf.calc_flux_per_basin(
                 BASIN['data_cube']['monthly']['bf'],
                 BASIN['gis_data']['basin_mask'],
                 chunksize=BASIN['chunksize'],
                 output=output_file.format(variable)                
                 )
+    data['bf']=df/unit_conversion
     #Fill data in Sheet 6 csv
     monthly_csvs=[]
     for i in range(len(df.index)):
@@ -69,12 +70,12 @@ def main(BASIN,unit_conversion=1):
             entries['VERTICAL_GROUNDWATER_WITHDRAWALS'][lu]=data['supply_gw'][lu].iloc[i]
             entries['RETURN_FLOW_SURFACEWATER'][lu]=data['return_gw_from_sw'][lu].iloc[i]
                
-        entries_2={'CapillaryRise': 'nan', #assume no capillary rise
-                         'DeltaS': 'nan',
-                         'ManagedAquiferRecharge': 'nan',
-                         'Baseflow': data['bf'].iloc[0][0],
-                         'GWInflow': 'nan',
-                         'GWOutflow': 'nan'}
+        entries_2={'CapillaryRise': '0.0', #assume no capillary rise
+                         'DeltaS': '0.0',
+                         'ManagedAquiferRecharge': '0.0',
+                         'Baseflow': data['bf'].iloc[i][0],
+                         'GWInflow': '0.0',
+                         'GWOutflow': '0.0'}
         #write sheet 2 csv
         output_fh=os.path.join(sheet_folder,'sheet6_{0}_{1}.csv'.format(year,month))
         create_sheet6_csv(entries,entries_2,output_fh)    
