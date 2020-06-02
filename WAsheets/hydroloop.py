@@ -148,7 +148,7 @@ def substract_flow(flow_nc,subtract_flow_nc,
              name='difference_flow',
              output=None,chunksize=None):
     '''
-    Add additional_flow_nc to flow_nc and save to new dataset
+    substract subtract_flow_nc from flow_nc and save to new dataset
     '''
     flow=cf.open_nc(flow_nc,chunksize=chunksize,layer=0)
     subtract_flow=cf.open_nc(subtract_flow_nc,
@@ -171,7 +171,7 @@ def substract_flow(flow_nc,subtract_flow_nc,
                 complevel=9, 
                 least_significant_digit=2, 
                 chunksizes=chunksize)
-    print('Save summed {0} as {1}'.format(name,output))
+    print('Save {0} as {1}'.format(name,output))
     difference_flow.load().to_netcdf(output,
                  encoding={difference_flow.name:comp})  
     return output  
@@ -284,6 +284,7 @@ def split_ETI(et_nc,i_nc=None,t_nc=None,
     
     '''
     keys=input_data.keys()
+    
     #Interception
     if i_nc is None:
         #check input data        
@@ -301,12 +302,12 @@ def split_ETI(et_nc,i_nc=None,t_nc=None,
             nrd_nc=input_data['nrd_nc']
             i_nc=calc_interception(p_nc,lai_nc,nrd_nc,
                               chunksize=chunksize)
-            input_data['i_nc']=i_nc
+
             return
     #Transpiration
     if t_nc is None:
         #check input data        
-        list_rq=['et_nc','i_nc','ndm_nc']
+        list_rq=['ndm_nc']
         check=[item in keys for item in list_rq]
         if not all(check): #not enough input_data
             print('ERROR:Missing data to calculate             transpiration')
@@ -318,9 +319,8 @@ def split_ETI(et_nc,i_nc=None,t_nc=None,
             if 'ndm_max_original' in keys:#check ndm_max method
                 ndm_max_original=input_data['ndm_max_original']
             else: #if no method specified, keep False
-                ndm_max_original=False
-            et_nc=input_data['et_nc'] #
-            i_nc=input_data['i_nc']
+                ndm_max_original=False           
+
             ndm_nc=input_data['ndm_nc']
             t_nc=calc_transpiration(et_nc,i_nc,ndm_nc,
                        chunksize=chunksize,
@@ -380,7 +380,7 @@ def calc_transpiration(et_nc,i_nc,ndm_nc,
     '''
     #open dataset
     et=cf.open_nc(et_nc,chunksize=chunksize,layer=0)
-    i=cf.open_nc(i_nc,chunksize=chunksize,layer=0)
+    interception=cf.open_nc(i_nc,chunksize=chunksize,layer=0)
     ndm=cf.open_nc(ndm_nc,chunksize=chunksize,layer=0)
     #calculate maximum NDM
     if not ndm_max_original:
@@ -404,7 +404,7 @@ def calc_transpiration(et_nc,i_nc,ndm_nc,
            m=pd.to_datetime(ndm.time[0].data).month #month index
            ndm_max[i]=ndm_month_max[m-1]/0.95
     #calculate Transpiration
-    t=xr.ufuncs.minimum((ndm/ndm_max),0.95)*(et-i)
+    t=xr.ufuncs.minimum((ndm/ndm_max),0.95)*(et-interception)
     #fill in nan value due to missing ndm value    
     t = xr.where(xr.ufuncs.isnan(t),0,t)+et*0
     #save dataset
@@ -426,7 +426,7 @@ def calc_transpiration(et_nc,i_nc,ndm_nc,
     t.load().to_netcdf(output,encoding=encoding)
     #close dataset
     et.close()
-    i.close()
+    interception.close()
     ndm.close()
     return output
 
@@ -653,9 +653,7 @@ def calc_sw_supply_fraction_by_LU(lu_nc,aeisw_tif,
     # update fraction with aeisw (GMIA)
     aeisw=gis.OpenAsArray(aeisw_tif,nan_values=True)
     aeisw=aeisw/100 #convert percentage to fraction
-    aeisw = xr.where(xr.isnan(aeisw),
-                     aeisw.mean(skipna=True),
-                     aeisw)  #assume average aeisw where NaN
+    aeisw = np.where(np.isnan(aeisw),np.nanmean(aeisw),aeisw)  #assume average aeisw where NaN
     sw_supply_fraction = xr.where(
                 LU.isin(lucs['Irrigated crops']),# for irrigated crops
                 aeisw,#sw_supply_fraction = aeisw
@@ -679,7 +677,7 @@ def calc_sw_supply_fraction_by_LU(lu_nc,aeisw_tif,
         output=os.path.join(os.path.dirname(lu_nc),
                             'sw_supply_fraction.nc')
     sw_supply_fraction.load().to_netcdf(output,encoding=encoding)
-    print('Save monthly LU datacube as {0}'.format(output))
+    print('Save monthly sw supply fraction datacube as {0}'.format(output))
     del LU
     return output
 
@@ -856,7 +854,7 @@ def calc_residential_water_consumption(population_tif,
     # Calculate WC per pixel in [mm/month]
     mask=xr.where(lu.isin(classes),1,0)
     ndays_mask=mask*ndays_da
-    residential_wc*=ndays_mask
+    residential_wc=ndays_mask*residential_wc
     # Add residential water to total blue water
     mean=residential_wc.mean(dim=['latitude','longitude'],skipna=True)
     residential_wc=xr.where(xr.ufuncs.isnan(residential_wc),
