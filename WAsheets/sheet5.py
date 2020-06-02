@@ -38,21 +38,24 @@ def main(BASIN,unit_conversion=1):
     data={'basin':dict()}
     # Full basin
     for variable in ['sro','bf','supply_sw']:
-        data['basin'][variable]=cf.calc_flux_per_basin(
+        df=cf.calc_flux_per_LU_class(
                  BASIN['data_cube']['monthly'][variable], 
                  BASIN['data_cube']['monthly']['lu'], 
                  BASIN['gis_data']['basin_mask'],
-                 chunksize=BASIN['chunksize'], 
+#                 chunksize=BASIN['chunksize'], 
                  output=output_file.format('{0}_{1}'.format('basin',variable)), 
                  lu_dictionary=lu_dict, #calc for LU categories
-                 quantity='volume')/unit_conversion
+                 quantity='volume')
+        data['basin'][variable]=df/unit_conversion
+                
     for variable in ['return_sw','return_sw_from_gw','return_sw_from_sw']:        
-        data['basin'][variable]=cf.calc_flux_per_basin(
+        df=cf.calc_flux_per_basin(
                  BASIN['data_cube']['monthly'][variable], 
                  BASIN['gis_data']['basin_mask'],
-                 chunksize=BASIN['chunksize'], 
+#                 chunksize=BASIN['chunksize'], 
                  output=output_file.format('{0}_{1}'.format('basin',variable)),
-                 quantity='volume')/unit_conversion
+                 quantity='volume')
+        data['basin'][variable]=df/unit_conversion
 
     #connection between subbasin
     sb_codes=BASIN['gis_data']['subbasin_mask'].keys()
@@ -66,21 +69,23 @@ def main(BASIN,unit_conversion=1):
     for sb in sb_codes:
         data[sb]=dict()
         for variable in ['sro','bf','supply_sw']:
-            data[sb][variable]=cf.calc_flux_per_basin(
+            df=cf.calc_flux_per_LU_class(
                      BASIN['data_cube']['monthly'][variable], 
                      BASIN['data_cube']['monthly']['lu'], 
                      BASIN['gis_data']['subbasin_mask'][sb],
-                     chunksize=BASIN['chunksize'], 
+#                     chunksize=BASIN['chunksize'], 
                      output=output_file.format('subbasin_{0}_{1}'.format(sb,variable)), 
                      lu_dictionary=lu_dict, #calc for LU categories
-                     quantity='volume')/unit_conversion
+                     quantity='volume')
+            data[sb][variable]=df/unit_conversion
         for variable in ['return_sw','return_sw_from_gw','return_sw_from_sw']:        
-            data[sb][variable]=cf.calc_flux_per_basin(
+            df=cf.calc_flux_per_basin(
                      BASIN['data_cube']['monthly'][variable], 
                      BASIN['gis_data']['subbasin_mask'][sb],
-                     chunksize=BASIN['chunksize'], 
+#                     chunksize=BASIN['chunksize'], 
                      output=output_file.format('subbasin_{0}_{1}'.format(sb,variable)),
-                     quantity='volume')/unit_conversion
+                     quantity='volume')
+            data[sb][variable]=df/unit_conversion
         ##read timeseries
         #inflow
         if len(dico_in[sb])==0: #no inflow
@@ -90,7 +95,7 @@ def main(BASIN,unit_conversion=1):
                 if dico_in[sb][i] == 0: #inflow from outside
                     df_inflow=pd.read_csv(BASIN['ts_data']['q_in_sw'][sb],
                                           sep=';',index_col=0)
-                    basin_inflows+=df_inflow
+                    basin_inflows=basin_inflows+df_inflow
                 else: #inflow from upstream subbasin                  
                     subbasin_in=BASIN['params']['dico_in'][sb][i]
                     df_inflow=pd.read_csv(BASIN['ts_data']['q_outflow'][subbasin_in],
@@ -99,7 +104,7 @@ def main(BASIN,unit_conversion=1):
                 if i == 0:
                     inflow=df_inflow
                 else:
-                    inflow+=df_inflow    
+                    inflow=inflow+df_inflow    
         data[sb]['inflows']=inflow
         #outflow
         data[sb]['total_outflow']=pd.read_csv(BASIN['ts_data']['q_outflow'][sb],
@@ -121,8 +126,9 @@ def main(BASIN,unit_conversion=1):
             basin_interbasin_transfers=data[sb]['interbasin_transfers']
             basin_deltaS=data[sb]['deltaS']
         else:
-            basin_interbasin_transfers+=data[sb]['interbasin_transfers']
-            basin_deltaS+=data[sb]['deltaS']
+            basin_interbasin_transfers=basin_interbasin_transfers\
+            +data[sb]['interbasin_transfers']
+            basin_deltaS=basin_deltaS+data[sb]['deltaS']
 
     #basin inflow, outflow, dS, interbasin_transfers
     data['basin']['inflows']=basin_inflows
@@ -137,16 +143,16 @@ def main(BASIN,unit_conversion=1):
         month=data['basin']['sro'].index[i].month
         results=Vividict()
         for sb in data.keys():
-            for lu in lu_dict.keys:
+            for lu in lu_dict:
                 results['surf_runoff'][sb][lu]=data[sb]['sro'][lu].values[i] 
                 results['base_runoff'][sb][lu]=data[sb]['bf'][lu].values[i] 
-            results['total_runoff'][sb]=np.nansum([results['surf_runoff'][sb][lu] for lu in lu_dict.keys])\
-                        +np.nansum([results['base_runoff'][sb][lu] for lu in lu_dict.keys])
+            results['total_runoff'][sb]=np.nansum([results['surf_runoff'][sb][lu] for lu in lu_dict])\
+                        +np.nansum([results['base_runoff'][sb][lu] for lu in lu_dict])
             results['withdrawls'][sb]['man']=data[sb]['supply_sw']['MANAGED'].values[i]                 
             results['withdrawls'][sb]['natural']=\
-                            data[sb]['supply_sw']['PROTECTED'].values[i][0]\
-                            +data[sb]['supply_sw']['UTILIZED'].values[i][0]\
-                            +data[sb]['supply_sw']['MODIFIED'].values[i][0]
+                            data[sb]['supply_sw']['PROTECTED'].values[i]\
+                            +data[sb]['supply_sw']['UTILIZED'].values[i]\
+                            +data[sb]['supply_sw']['MODIFIED'].values[i]
             results['return_sw_sw'][sb]=data[sb]['return_sw_from_sw'].values[i][0]
             results['return_gw_sw'][sb]=data[sb]['return_sw_from_gw'].values[i][0]
             results['inflows'][sb]=data[sb]['inflows'].values[i][0]
