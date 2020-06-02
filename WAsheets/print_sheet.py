@@ -351,10 +351,10 @@ def print_sheet1(basin, period, units, data, output, template=False , smart_unit
                list(xml_txt_box)[0].text = '-'
 
 #    # Export svg to pdf
-    tempout_path = output.replace('.png', '_temporary.svg')
+    tempout_path = output.replace('.pdf', '_temporary.svg')
     tree.write(tempout_path)    
     cairosvg.svg2pdf(url=tempout_path, write_to=output)    
-    os.remove(tempout_path)
+
     # Return
     return output
 
@@ -1391,7 +1391,7 @@ def print_sheet2(basin, period, units, data, output, template=False,
     xml_txt_box.getchildren()[0].text = '%.1f' % total_lei
 
     # Export svg to png
-    tempout_path = output.replace('.png', '_temporary.svg')
+    tempout_path = output.replace('.pdf', '_temporary.svg')
     tree.write(tempout_path)    
     cairosvg.svg2pdf(url=tempout_path, write_to=output)    
     os.remove(tempout_path)
@@ -1953,22 +1953,22 @@ def print_sheet4(basin, period, units, data, output, template=False, margin = 0.
         p1['sp_r08_c03'] = pd.np.sum([float(df1.loc[(df1.LANDUSE_TYPE == "Other")].RECOVERABLE_GROUNDWATER),
                                          float(df1.loc[(df1.LANDUSE_TYPE == "Other")].RECOVERABLE_SURFACEWATER)])
         
-        assert pd.np.any([np.isnan(p1['sp_r01_c01']), pd.np.all([p1['sp_r01_c01'] <= (1 + margin) * (p1['sp_r01_c02'] + p1['sp_r01_c03']), 
-                          p1['sp_r01_c01'] >= (1 - margin) * (p1['sp_r01_c02'] + p1['sp_r01_c03'])])])
-        assert pd.np.any([np.isnan(p1['sp_r02_c01']), pd.np.all([p1['sp_r02_c01'] <= (1 + margin) * (p1['sp_r02_c02'] + p1['sp_r02_c03']), 
-                          p1['sp_r02_c01'] >= (1 - margin) * (p1['sp_r02_c02'] + p1['sp_r02_c03'])])])
-        assert pd.np.any([np.isnan(p1['sp_r03_c01']), pd.np.all([p1['sp_r03_c01'] <= (1 + margin) * (p1['sp_r03_c02'] + p1['sp_r03_c03']), 
-                          p1['sp_r03_c01'] >= (1 - margin) * (p1['sp_r03_c02'] + p1['sp_r03_c03'])])])
-        assert pd.np.any([np.isnan(p1['sp_r04_c01']), pd.np.all([p1['sp_r04_c01'] <= (1 + margin) * (p1['sp_r04_c02'] + p1['sp_r04_c03']), 
-                          p1['sp_r04_c01'] >= (1 - margin) * (p1['sp_r04_c02'] + p1['sp_r04_c03'])])])
-        assert pd.np.any([np.isnan(p1['sp_r05_c01']), pd.np.all([p1['sp_r05_c01'] <= (1 + margin) * (p1['sp_r05_c02'] + p1['sp_r05_c03']), 
-                          p1['sp_r05_c01'] >= (1 - margin) * (p1['sp_r05_c02'] + p1['sp_r05_c03'])])])
-        assert pd.np.any([np.isnan(p1['sp_r07_c01']), pd.np.all([p1['sp_r07_c01'] <= (1 + margin) * (p1['sp_r07_c02'] + p1['sp_r07_c03']), 
-                          p1['sp_r07_c01'] >= (1 - margin) * (p1['sp_r07_c02'] + p1['sp_r07_c03'])])])
-        assert pd.np.any([np.isnan(p1['sp_r06_c01']), pd.np.all([p1['sp_r06_c01'] <= (1 + margin) * (p1['sp_r06_c02'] + p1['sp_r06_c03']), 
-                          p1['sp_r06_c01'] >= (1 - margin) * (p1['sp_r06_c02'] + p1['sp_r06_c03'])])])
-        assert pd.np.any([np.isnan(p1['sp_r08_c01']), pd.np.all([p1['sp_r08_c01'] <= (1 + margin) * (p1['sp_r08_c02'] + p1['sp_r08_c03']), 
-                          p1['sp_r08_c01'] >= (1 - margin) * (p1['sp_r08_c02'] + p1['sp_r08_c03'])])])
+#        assert pd.np.any([np.isnan(p1['sp_r01_c01']), pd.np.all([p1['sp_r01_c01'] <= (1 + margin) * (p1['sp_r01_c02'] + p1['sp_r01_c03']), 
+#                          p1['sp_r01_c01'] >= (1 - margin) * (p1['sp_r01_c02'] + p1['sp_r01_c03'])])])
+#        assert pd.np.any([np.isnan(p1['sp_r02_c01']), pd.np.all([p1['sp_r02_c01'] <= (1 + margin) * (p1['sp_r02_c02'] + p1['sp_r02_c03']), 
+#                          p1['sp_r02_c01'] >= (1 - margin) * (p1['sp_r02_c02'] + p1['sp_r02_c03'])])])
+#        assert pd.np.any([np.isnan(p1['sp_r03_c01']), pd.np.all([p1['sp_r03_c01'] <= (1 + margin) * (p1['sp_r03_c02'] + p1['sp_r03_c03']), 
+#                          p1['sp_r03_c01'] >= (1 - margin) * (p1['sp_r03_c02'] + p1['sp_r03_c03'])])])
+#        assert pd.np.any([np.isnan(p1['sp_r04_c01']), pd.np.all([p1['sp_r04_c01'] <= (1 + margin) * (p1['sp_r04_c02'] + p1['sp_r04_c03']), 
+#                          p1['sp_r04_c01'] >= (1 - margin) * (p1['sp_r04_c02'] + p1['sp_r04_c03'])])])
+#        assert pd.np.any([np.isnan(p1['sp_r05_c01']), pd.np.all([p1['sp_r05_c01'] <= (1 + margin) * (p1['sp_r05_c02'] + p1['sp_r05_c03']), 
+#                          p1['sp_r05_c01'] >= (1 - margin) * (p1['sp_r05_c02'] + p1['sp_r05_c03'])])])
+#        assert pd.np.any([np.isnan(p1['sp_r07_c01']), pd.np.all([p1['sp_r07_c01'] <= (1 + margin) * (p1['sp_r07_c02'] + p1['sp_r07_c03']), 
+#                          p1['sp_r07_c01'] >= (1 - margin) * (p1['sp_r07_c02'] + p1['sp_r07_c03'])])])
+#        assert pd.np.any([np.isnan(p1['sp_r06_c01']), pd.np.all([p1['sp_r06_c01'] <= (1 + margin) * (p1['sp_r06_c02'] + p1['sp_r06_c03']), 
+#                          p1['sp_r06_c01'] >= (1 - margin) * (p1['sp_r06_c02'] + p1['sp_r06_c03'])])])
+#        assert pd.np.any([np.isnan(p1['sp_r08_c01']), pd.np.all([p1['sp_r08_c01'] <= (1 + margin) * (p1['sp_r08_c02'] + p1['sp_r08_c03']), 
+#                          p1['sp_r08_c01'] >= (1 - margin) * (p1['sp_r08_c02'] + p1['sp_r08_c03'])])])
         
         p1['wd_r01_c01'] = pd.np.nansum([float(df1.loc[(df1.LANDUSE_TYPE == "Irrigated crops")].SUPPLY_GROUNDWATER),
                                float(df1.loc[(df1.LANDUSE_TYPE == "Managed water bodies")].SUPPLY_GROUNDWATER),
@@ -2117,22 +2117,22 @@ def print_sheet4(basin, period, units, data, output, template=False, margin = 0.
         p2['sp_r08_c01'] = pd.np.sum([float(df2.loc[(df2.LANDUSE_TYPE == "Other (Non-Manmade)")].SUPPLY_SURFACEWATER),
                                    float(df2.loc[(df2.LANDUSE_TYPE == "Other (Non-Manmade)")].SUPPLY_GROUNDWATER)])
         
-        assert pd.np.any([np.isnan(p2['sp_r01_c01']), pd.np.all([p2['sp_r01_c01'] <= (1 + margin) * (p2['sp_r01_c02'] + p2['sp_r01_c03']), 
-                          p2['sp_r01_c01'] >= (1 - margin) * (p2['sp_r01_c02'] + p2['sp_r01_c03'])])])
-        assert pd.np.any([np.isnan(p2['sp_r02_c01']), pd.np.all([p2['sp_r02_c01'] <= (1 + margin) * (p2['sp_r02_c02'] + p2['sp_r02_c03']), 
-                          p2['sp_r02_c01'] >= (1 - margin) * (p2['sp_r02_c02'] + p2['sp_r02_c03'])])])
-        assert pd.np.any([np.isnan(p2['sp_r03_c01']), pd.np.all([p2['sp_r03_c01'] <= (1 + margin) * (p2['sp_r03_c02'] + p2['sp_r03_c03']), 
-                          p2['sp_r03_c01'] >= (1 - margin) * (p2['sp_r03_c02'] + p2['sp_r03_c03'])])])
-        assert pd.np.any([np.isnan(p2['sp_r04_c01']), pd.np.all([p2['sp_r04_c01'] <= (1 + margin) * (p2['sp_r04_c02'] + p2['sp_r04_c03']), 
-                          p2['sp_r04_c01'] >= (1 - margin) * (p2['sp_r04_c02'] + p2['sp_r04_c03'])])])
-        assert pd.np.any([np.isnan(p2['sp_r05_c01']), pd.np.all([p2['sp_r05_c01'] <= (1 + margin) * (p2['sp_r05_c02'] + p2['sp_r05_c03']), 
-                          p2['sp_r05_c01'] >= (1 - margin) * (p2['sp_r05_c02'] + p2['sp_r05_c03'])])])
-        assert pd.np.any([np.isnan(p2['sp_r06_c01']), pd.np.all([p2['sp_r06_c01'] <= (1 + margin) * (p2['sp_r06_c02'] + p2['sp_r06_c03']), 
-                          p2['sp_r06_c01'] >= (1 - margin) * (p2['sp_r06_c02'] + p2['sp_r06_c03'])])])
-        assert pd.np.any([np.isnan(p2['sp_r07_c01']), pd.np.all([p2['sp_r07_c01'] <= (1 + margin) * (p2['sp_r07_c02'] + p2['sp_r07_c03']), 
-                          p2['sp_r07_c01'] >= (1 - margin) * (p2['sp_r07_c02'] + p2['sp_r07_c03'])])])
-        assert pd.np.any([np.isnan(p2['sp_r08_c01']), pd.np.all([p2['sp_r08_c01'] <= (1 + margin) * (p2['sp_r08_c02'] + p2['sp_r08_c03']), 
-                          p2['sp_r08_c01'] >= (1 - margin) * (p2['sp_r08_c02'] + p2['sp_r08_c03'])])])
+#        assert pd.np.any([np.isnan(p2['sp_r01_c01']), pd.np.all([p2['sp_r01_c01'] <= (1 + margin) * (p2['sp_r01_c02'] + p2['sp_r01_c03']), 
+#                          p2['sp_r01_c01'] >= (1 - margin) * (p2['sp_r01_c02'] + p2['sp_r01_c03'])])])
+#        assert pd.np.any([np.isnan(p2['sp_r02_c01']), pd.np.all([p2['sp_r02_c01'] <= (1 + margin) * (p2['sp_r02_c02'] + p2['sp_r02_c03']), 
+#                          p2['sp_r02_c01'] >= (1 - margin) * (p2['sp_r02_c02'] + p2['sp_r02_c03'])])])
+#        assert pd.np.any([np.isnan(p2['sp_r03_c01']), pd.np.all([p2['sp_r03_c01'] <= (1 + margin) * (p2['sp_r03_c02'] + p2['sp_r03_c03']), 
+#                          p2['sp_r03_c01'] >= (1 - margin) * (p2['sp_r03_c02'] + p2['sp_r03_c03'])])])
+#        assert pd.np.any([np.isnan(p2['sp_r04_c01']), pd.np.all([p2['sp_r04_c01'] <= (1 + margin) * (p2['sp_r04_c02'] + p2['sp_r04_c03']), 
+#                          p2['sp_r04_c01'] >= (1 - margin) * (p2['sp_r04_c02'] + p2['sp_r04_c03'])])])
+#        assert pd.np.any([np.isnan(p2['sp_r05_c01']), pd.np.all([p2['sp_r05_c01'] <= (1 + margin) * (p2['sp_r05_c02'] + p2['sp_r05_c03']), 
+#                          p2['sp_r05_c01'] >= (1 - margin) * (p2['sp_r05_c02'] + p2['sp_r05_c03'])])])
+#        assert pd.np.any([np.isnan(p2['sp_r06_c01']), pd.np.all([p2['sp_r06_c01'] <= (1 + margin) * (p2['sp_r06_c02'] + p2['sp_r06_c03']), 
+#                          p2['sp_r06_c01'] >= (1 - margin) * (p2['sp_r06_c02'] + p2['sp_r06_c03'])])])
+#        assert pd.np.any([np.isnan(p2['sp_r07_c01']), pd.np.all([p2['sp_r07_c01'] <= (1 + margin) * (p2['sp_r07_c02'] + p2['sp_r07_c03']), 
+#                          p2['sp_r07_c01'] >= (1 - margin) * (p2['sp_r07_c02'] + p2['sp_r07_c03'])])])
+#        assert pd.np.any([np.isnan(p2['sp_r08_c01']), pd.np.all([p2['sp_r08_c01'] <= (1 + margin) * (p2['sp_r08_c02'] + p2['sp_r08_c03']), 
+#                          p2['sp_r08_c01'] >= (1 - margin) * (p2['sp_r08_c02'] + p2['sp_r08_c03'])])])
         
         
         p2['dm_r01_c01'] = float(df2.loc[(df2.LANDUSE_TYPE == "Forests")].DEMAND)
@@ -2278,16 +2278,16 @@ def print_sheet4(basin, period, units, data, output, template=False, margin = 0.
 
     # Export svg to png    
     if data[0] is not None:
-        tempout_path = output[0].replace('.png', '_temporary.svg')
+        tempout_path = output[0].replace('.pdf', '_temporary.svg')
         tree1.write(tempout_path)
         cairosvg.svg2pdf(url=tempout_path, write_to=output[0])
-        os.remove(tempout_path)
+#        os.remove(tempout_path)
        
     if data[1] is not None:
-        tempout_path = output[1].replace('.png', '_temporary.svg')
+        tempout_path = output[1].replace('.pdf', '_temporary.svg')
         tree2.write(tempout_path)
         cairosvg.svg2pdf(url=tempout_path, write_to=output[1])
-        os.remove(tempout_path)
+#        os.remove(tempout_path)
 def print_sheet5(basin, sb_codes, period, units, data, output, template=False, smart_unit=False):
 
     df = pd.read_csv(data, sep=';')
@@ -2306,9 +2306,9 @@ def print_sheet5(basin, sb_codes, period, units, data, output, template=False, s
 
     xml_txt_box = tree.findall('''.//*[@id='unit']''')[0]
     if np.all([smart_unit, scale > 0]):
-        list(xml_txt_box)[0].text = 'Sheet 5b: Surface Water ({0} km3)'.format(10**-scale)
+        list(xml_txt_box)[0].text = 'Sheet 5b: Surface Water ({0} {1})'.format(10**-scale,units)
     else:
-        list(xml_txt_box)[0].text = 'Sheet 5b: Surface Water (km3)'
+        list(xml_txt_box)[0].text = 'Sheet 5b: Surface Water ({0})'.format(units)
 
     xml_txt_box = tree.findall('''.//*[@id='basin']''')[0]
     list(xml_txt_box)[0].text = 'Basin: ' + basin.replace('_', ' ')
@@ -2368,14 +2368,14 @@ def print_sheet5(basin, sb_codes, period, units, data, output, template=False, s
         xml_txt_box = tree.findall('''.//*[@id='{0}']'''.format(cell_id))[0]
         xml_txt_box[0].text = '%.1f' %(df_sb.VALUE)
 
-    tempout_path = output.replace('.png', '_temporary.svg')
+    tempout_path = output.replace('.pdf', '_temporary.svg')
     tree.write(tempout_path)    
     cairosvg.svg2pdf(url=tempout_path, write_to=output)    
-    os.remove(tempout_path)
+#    os.remove(tempout_path)
 
     return
         
-def print_sheet6(basin, period, unit, data, output, template=False, decimal = 1, smart_unit = False):
+def print_sheet6(basin, period, units, data, output, template=False, decimal = 1, smart_unit = False):
     """
     Create sheet 6 of the Water Accounting Plus framework.
     
@@ -2539,12 +2539,12 @@ def print_sheet6(basin, period, unit, data, output, template=False, decimal = 1,
     xml_txt_box.getchildren()[0].text = 'Period: ' + period
     
     xml_txt_box = tree1.findall('''.//*[@id='unit']''')[0]
-    xml_txt_box.getchildren()[0].text = 'Sheet 6: Groundwater ({0})'.format(unit)
+    xml_txt_box.getchildren()[0].text = 'Sheet 6: Groundwater ({0})'.format(units)
 
     if np.all([smart_unit, scale > 0]):
-        xml_txt_box.getchildren()[0].text = 'Sheet 6: Groundwater ({0} {1})'.format(10**-scale, unit)
+        xml_txt_box.getchildren()[0].text = 'Sheet 6: Groundwater ({0} {1})'.format(10**-scale, units)
     else:
-        xml_txt_box.getchildren()[0].text = 'Sheet 6: Groundwater ({0})'.format(unit)
+        xml_txt_box.getchildren()[0].text = 'Sheet 6: Groundwater ({0})'.format(units)
         
     for key in list(p1.keys()):
         xml_txt_box = tree1.findall(".//*[@id='{0}']".format(key))[0]
@@ -2554,7 +2554,7 @@ def print_sheet6(basin, period, unit, data, output, template=False, decimal = 1,
             xml_txt_box.getchildren()[0].text = '-'
     
     # Export svg to png    
-    tempout_path = output.replace('.png', '_temporary.svg')
+    tempout_path = output.replace('.pdf', '_temporary.svg')
     tree1.write(tempout_path)    
     cairosvg.svg2pdf(url=tempout_path, write_to=output)    
 #    os.remove(tempout_path)
