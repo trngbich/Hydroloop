@@ -230,6 +230,7 @@ def aggregate_by_lu_unique(dts,LU,how='sum'):
     data=[] #create empty data list
     
     LU=dts*0+LU #Trick: to keep same time dimension
+    dts=LU*0+dts #Trick: to keep same time dimension
     for lucl in unique_LU: #agrregate total fluxes per each lu class
         dts_lu=xr.where(LU==lucl,dts,np.nan) #mask only lu class
         if how=='sum':
@@ -256,9 +257,10 @@ def aggregate_by_lu_dictionary(dts,LU,lu_dictionary,how='sum'):
     '''
     data=[] #create empty data list
     LU=dts*0+LU #Trick: to keep same time dimension
+    dts=LU*0+dts #Trick: to keep same time dimension
     for key in lu_dictionary: #agrregate total fluxes per each lu class
         classes=lu_dictionary[key]
-        dts_lu=dts.where(LU.isin(classes),np.nan) #mask only lu class
+        dts_lu=xr.where(LU.isin(classes),dts,np.nan) #mask only lu class
         if how=='sum':
             df_lu=dts_lu.sum(dim=[
                     'latitude',
