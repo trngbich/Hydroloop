@@ -1407,27 +1407,28 @@ def print_sheet3(basin, period, units, data, output, template=False):
     # Read table
     df = pd.read_csv(data, sep=';')
     # Read csv file part 1
-    crop_r01c01 = float(df.loc[(df.SEASON == "Kharif") &
-                        (df.TYPE == "RAIN")].ET_RAINFALL)\
-                    +float(df.loc[(df.SEASON == "Kharif") &
-                        (df.TYPE == "RAIN")].ET_INCREMENTAL)
-    crop_r01c02 = float(df.loc[(df.SEASON == "Rabi") &
-                        (df.TYPE == "RAIN")].ET_RAINFALL)\
-                    +float(df.loc[(df.SEASON == "Rabi") &
-                        (df.TYPE == "RAIN")].ET_INCREMENTAL)
-    crop_r01c03 = float(df.loc[(df.SEASON == "Zaid") &
-                        (df.TYPE == "RAIN")].ET_RAINFALL)\
-                    +float(df.loc[(df.SEASON == "Zaid") &
-                        (df.TYPE == "RAIN")].ET_INCREMENTAL)
-    crop_r01c04 = float(df.loc[(df.SEASON == "Double/Triple Crop") &
-                        (df.TYPE == "RAIN")].ET_RAINFALL)\
-                    +float(df.loc[(df.SEASON == "Double/Triple Crop") &
-                        (df.TYPE == "RAIN")].ET_INCREMENTAL)
-    crop_r01c05 = float(df.loc[(df.SEASON == "Forest plantation") &
-                        (df.TYPE == "RAIN")].ET_RAINFALL)\
-                    +float(df.loc[(df.SEASON == "Forest plantation") &
-                        (df.TYPE == "RAIN")].ET_INCREMENTAL)
-    crop_r01 = crop_r01c01+crop_r01c02+crop_r01c03+crop_r01c04+crop_r01c05
+    crop_r01c01 = np.nansum([float(df.loc[(df.SEASON == "Kharif") &
+                        (df.TYPE == "RAIN")].ET_RAINFALL),
+                    float(df.loc[(df.SEASON == "Kharif") &
+                        (df.TYPE == "RAIN")].ET_INCREMENTAL)])
+    crop_r01c02 = np.nansum([float(df.loc[(df.SEASON == "Rabi") &
+                        (df.TYPE == "RAIN")].ET_RAINFALL),
+                    float(df.loc[(df.SEASON == "Rabi") &
+                        (df.TYPE == "RAIN")].ET_INCREMENTAL)])
+    crop_r01c03 = np.nansum([float(df.loc[(df.SEASON == "Zaid") &
+                        (df.TYPE == "RAIN")].ET_RAINFALL),
+                    float(df.loc[(df.SEASON == "Zaid") &
+                        (df.TYPE == "RAIN")].ET_INCREMENTAL)])
+    crop_r01c04 = np.nansum([float(df.loc[(df.SEASON == "Double/Triple Crop") &
+                        (df.TYPE == "RAIN")].ET_RAINFALL),
+                    float(df.loc[(df.SEASON == "Double/Triple Crop") &
+                        (df.TYPE == "RAIN")].ET_INCREMENTAL)])
+    crop_r01c05 = np.nansum([float(df.loc[(df.SEASON == "Forest plantation") &
+                        (df.TYPE == "RAIN")].ET_RAINFALL),
+                    float(df.loc[(df.SEASON == "Forest plantation") &
+                        (df.TYPE == "RAIN")].ET_INCREMENTAL)])
+    crop_r01 = np.nansum([crop_r01c01,crop_r01c02,
+                         crop_r01c03,crop_r01c04,crop_r01c05])
     
     crop_r02c01=float(df.loc[(df.SEASON == "Kharif") &
                         (df.TYPE == "IRRI")].ET_RAINFALL)
@@ -1439,7 +1440,8 @@ def print_sheet3(basin, period, units, data, output, template=False):
                         (df.TYPE == "IRRI")].ET_RAINFALL)
     crop_r02c05=float(df.loc[(df.SEASON == "Forest plantation") &
                         (df.TYPE == "IRRI")].ET_RAINFALL)
-    crop_r02=crop_r02c01+crop_r02c02+crop_r02c03+crop_r02c04+crop_r02c05
+    crop_r02=np.nansum([crop_r02c01,crop_r02c02,
+                       crop_r02c03,crop_r02c04,crop_r02c05])
     
     crop_r03c01=float(df.loc[(df.SEASON == "Kharif") &
                         (df.TYPE == "IRRI")].ET_INCREMENTAL)
@@ -1451,7 +1453,8 @@ def print_sheet3(basin, period, units, data, output, template=False):
                         (df.TYPE == "IRRI")].ET_INCREMENTAL)
     crop_r03c05=float(df.loc[(df.SEASON == "Forest plantation") &
                         (df.TYPE == "IRRI")].ET_INCREMENTAL)
-    crop_r03=crop_r03c01+crop_r03c02+crop_r03c03+crop_r03c04+crop_r03c05
+    crop_r03=np.nansum([crop_r03c01,crop_r03c02,
+                        crop_r03c03,crop_r03c04,crop_r03c05])
     
     crop_r04c01=crop_r02c01+crop_r03c01
     crop_r04c02=crop_r02c02+crop_r03c02
@@ -1772,10 +1775,10 @@ def print_sheet3(basin, period, units, data, output, template=False):
 
 
     # Export svg to png
-    tempout_path = output.replace('.png', '_temporary.svg')
+    tempout_path = output.replace('.pdf', '_temporary.svg')
     tree.write(tempout_path)    
-    cairosvg.svg2pdf(url=tempout_path, write_to=output[0])    
-    os.remove(tempout_path)
+    cairosvg.svg2pdf(url=tempout_path, write_to=output)    
+#    os.remove(tempout_path)
     
 
     return output

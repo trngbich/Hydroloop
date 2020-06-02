@@ -108,15 +108,15 @@ BASIN={
                 },
         'params':{
             'crops':{#lu_code: [r'seasons_dates.csv','Crop_type']
-                    35.0: [r'seasons_Kharif.csv','N/A'],
-                    54.0: [r'seasons_Kharif.csv','N/A'],
-                    36.0: [r'seasons_Rabi.csv','N/A'],
-                    55.0: [r'seasons_Rabi.csv','N/A'],
-                    37.0: [r'seasons_Zaid.csv','N/A'],
-                    56.0: [r'seasons_Zaid.csv','N/A'],
-                    57.0: [r'seasons_double_triple.csv','N/A'],
-                    33.0: [r'seasons_plantation.csv','N/A'],                    
-                    52.0: [r'seasons_plantation.csv','N/A'],                      
+                    35.0: [r'crop_season\seasons_Kharif.csv','N/A'],
+                    54.0: [r'crop_season\seasons_Kharif.csv','N/A'],
+                    36.0: [r'crop_season\seasons_Rabi.csv','N/A'],
+                    55.0: [r'crop_season\seasons_Rabi.csv','N/A'],
+                    37.0: [r'crop_season\seasons_Zaid.csv','N/A'],
+                    56.0: [r'crop_season\seasons_Zaid.csv','N/A'],
+                    57.0: [r'crop_season\seasons_double_triple.csv','N/A'],
+                    33.0: [r'crop_season\seasons_plantation.csv','N/A'],                    
+                    52.0: [r'crop_season\seasons_plantation.csv','N/A'],                      
                     },
             'dico_in':{1:[], 2:[1]},
             'dico_out':{1:[], 2:[0]},
@@ -320,7 +320,7 @@ from WAsheets import sheet6
 
 sheet1_yearly_csvs=sheet1.main(BASIN,unit_conversion=BASIN['unit_conversion'])
 sheet2_yearly_csvs=sheet2.main(BASIN,unit_conversion=BASIN['unit_conversion'])
-#sheet3_yearly_csvs=sheet3.main(BASIN,unit_conversion=BASIN['unit_conversion'])
+sheet3_yearly_csvs=sheet3.main(BASIN,unit_conversion=BASIN['unit_conversion'])
 sheet4_yearly_csvs=sheet4.main(BASIN,unit_conversion=BASIN['unit_conversion'])
 sheet5_yearly_csvs=sheet5.main(BASIN,unit_conversion=BASIN['unit_conversion'])
 sheet6_yearly_csvs=sheet6.main(BASIN,unit_conversion=BASIN['unit_conversion'])
@@ -339,10 +339,10 @@ for sheet2_csv in sheet2_yearly_csvs:
     ps.print_sheet2(BASIN['name'],period=period,output=output,
                     units='km3/year',data=sheet2_csv)
     
-#for sheet3_csv in sheet3_yearly_csvs:
-#    period=os.path.basename(sheet3_csv).split('.')[0].split('_')[-1]
-#    output=sheet3_csv.replace('.csv','.png')
-#    ps.print_sheet3(BASIN['name'],period=period,output=output,units=['MCM','kg/ha','kg/m3'],sheet3_csv)
+for sheet3_csv in sheet3_yearly_csvs:
+    period=os.path.basename(sheet3_csv).split('.')[0].split('_')[-1]
+    output=sheet3_csv.replace('.csv','.pdf')
+    ps.print_sheet3(BASIN['name'],period=period,output=output,units=['km3/year','kg/ha','kg/m3'],data=sheet3_csv)
     
 for sheet4_csv in sheet4_yearly_csvs:
     period=os.path.basename(sheet4_csv).split('.')[0].split('_')[-1]

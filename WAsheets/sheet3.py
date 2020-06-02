@@ -34,7 +34,7 @@ def main(BASIN,unit_conversion=1000):
     #Calulate monthly data to fill in Sheet 3    
     data={}
     yearly_data={}
-    for key in ['etincr','etrain','ndm','ndm_wp']:
+    for key in ['et','etincr','etrain','ndm','ndm_wp']:
         quantity='volume'
         if key=='ndm':
             quantity='depth'
@@ -144,9 +144,9 @@ def create_sheet3_csv(year,results,output_fh):
     
     for SEASON in list(sheet3_classes.keys()):
             for TYPE in list(sheet3_classes[SEASON].keys()):
-                writer.writerow(SEASON,TYPE,
+                writer.writerow([SEASON,TYPE,
                                 results[SEASON][TYPE][0],results[SEASON][TYPE][1],
-                                results[SEASON][TYPE][2],results[SEASON][TYPE][3])    
+                                results[SEASON][TYPE][2],results[SEASON][TYPE][3]])    
     csv_file.close()
     return True
     
