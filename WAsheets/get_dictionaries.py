@@ -379,11 +379,14 @@ def get_hi_and_ec():
 
 def get_sheet1_classes(lulc_version = '4.0'):
     lulc_dict = get_lulcs(lulc_version = lulc_version)
-    categories = ['PROTECTED', 'UTILIZED', 'MODIFIED', 'MANAGED']
+    categories = ['Protected', 'Utilized', 'Modified', 'Managed']
     sheet1_classes = dict()
     for cat in categories:
         sheet1_classes[cat] = [key for key, value in zip(list(lulc_dict.keys()), list(lulc_dict.values())) if value[1] == cat]
-
+    sheet1_classes['PROTECTED']=sheet1_classes.pop('Protected')
+    sheet1_classes['UTILIZED']=sheet1_classes.pop('Utilized')
+    sheet1_classes['MODIFIED']=sheet1_classes.pop('Modified')
+    sheet1_classes['MANAGED']=sheet1_classes.pop('Managed')
     return sheet1_classes
 
 def get_bluegreen_classes(version = '1.0'):
