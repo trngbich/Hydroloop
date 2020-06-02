@@ -37,10 +37,10 @@ def main(BASIN,unit_conversion=1000):
     df_ET=cf.calc_flux_per_basin(BASIN['data_cube']['monthly']['et'], 
                                 BASIN['gis_data']['basin_mask'], 
                                 chunksize=BASIN['chunksize'],
-                                output=output_file.format('basin_p_monthly'),
+                                output=output_file.format('basin_et_monthly'),
                                 quantity='volume')
     df_ETrain=cf.calc_flux_per_LU_class(BASIN['data_cube']['monthly']['etrain'], 
-                             BASIN['gis_data']['lu_map'], 
+                             BASIN['data_cube']['monthly']['lu'], 
                              BASIN['gis_data']['basin_mask'],
                      chunksize=BASIN['chunksize'], #option to process in chunks
                      output=output_file.format('basin_etrain_monthly'), 
@@ -49,7 +49,7 @@ def main(BASIN,unit_conversion=1000):
                      quantity='volume')
     
     df_ETincr=cf.calc_flux_per_LU_class(BASIN['data_cube']['monthly']['etincr'], 
-                             BASIN['gis_data']['lu_map'], 
+                             BASIN['data_cube']['monthly']['lu'], 
                              BASIN['gis_data']['basin_mask'],
                      chunksize=BASIN['chunksize'], #option to process in chunks
                      output=output_file.format('basin_etincr_monthly'), 
@@ -87,19 +87,23 @@ def main(BASIN,unit_conversion=1000):
                         'q_outflow','q_out_sw','q_out_gw']
         for key in ts_data_sheet1:
             if BASIN['ts_data'][key]['basin'] is not None:
-                df=pd.read_csv(BASIN['ts_data']['basin'][key],sep=';',index_col=0)
+                df=pd.read_csv(BASIN['ts_data'][key]['basin'],sep=';',index_col=0)
                 results[key]=df[df.columns[0]].values[i]
             else:
                 results[key]=0.
         #calulate water balance
        
         P=results['p_advection']
-        ET=df_ET[df_ET.columns[0]].values[i]/unit_conversion
+        ET=results['landscape_et_plu']+results['landscape_et_ulu']\
+        +results['landscape_et_mlu']+results['landscape_et_mwu']\
+        +results['uf_plu']+results['uf_ulu']+results['uf_mlu']+results['uf_mwu']
         Qin=results['q_in_sw']+results['q_in_gw']+results['q_in_desal']
         Qout=results['q_outflow']+results['q_out_sw']+results['q_out_gw']
         #In case yearly dS is not available, calculate dS
         if 'dS' not in BASIN['ts_data'].keys():
+            print('Calculating sheet 1 dS')
             results['dS']=calc_water_balance_residual(P,ET,Qin=Qin,Qout=Qout)
+            print('P: {0}, ET:{1},Qin: {2}, Qout:{3}, dS:{4}'.format(P,ET,Qin,Qout,results['dS']))
         #in case yearly dS is available, calculate q_outflow
         else:
             df=pd.read_csv(BASIN['ts_data']['dS'],sep=';',index_col=0)
@@ -125,10 +129,10 @@ def calc_water_balance_residual(P,ET,dS=None,Qin=None,Qout=None):
     else:
         gross_inflow=P
     if dS is not None:
-        Qout=gross_inflow-dS
+        Qout=gross_inflow-ET-dS
         return Qout
     if Qout is not None:
-        dS=gross_inflow-Qout
+        dS=gross_inflow-ET-Qout
         return dS
         
 def create_sheet1_csv(results, output_fh):
@@ -172,7 +176,7 @@ def create_sheet1_csv(results, output_fh):
     writer.writerow(['INFLOW', 'OTHER', 'Desalinized', 
                      '{0}'.format(results['q_in_desal'])])
     writer.writerow(['STORAGE', 'CHANGE', 'Surface storage', 
-                     '{0}'.format(results['dS'])])
+                     '{0}'.format(-results['dS'])])
     writer.writerow(['STORAGE', 'CHANGE', 'Storage in sinks',
                      0.])
     writer.writerow(['OUTFLOW', 'ET LANDSCAPE', 'Protected',
