@@ -328,40 +328,45 @@ sheet6_yearly_csvs=sheet6.main(BASIN,unit_conversion=BASIN['unit_conversion'])
 #%% Print hydro-yearly sheet csv
 from WAsheets import print_sheet as ps
 
+if BASIN['unit_conversion'] == 1e6:
+    str_unit='km3/year'
+elif BASIN['unit_conversion']==1e3:
+    str_unit='MCM/year'
+    
 for sheet1_csv in sheet1_yearly_csvs:
     period=os.path.basename(sheet1_csv).split('.')[0].split('_')[-1]
     output=sheet1_csv.replace('.csv','.pdf')
     ps.print_sheet1(BASIN['name'],period=period,
-                    output=output,units='km3/year',data=sheet1_csv)
+                    output=output,units=str_unit,data=sheet1_csv)
 
 for sheet2_csv in sheet2_yearly_csvs:
     period=os.path.basename(sheet2_csv).split('.')[0].split('_')[-1]
     output=sheet2_csv.replace('.csv','.pdf')
     ps.print_sheet2(BASIN['name'],period=period,output=output,
-                    units='km3/year',data=sheet2_csv)
+                    units=str_unit,data=sheet2_csv)
     
 for sheet3_csv in sheet3_yearly_csvs:
     period=os.path.basename(sheet3_csv).split('.')[0].split('_')[-1]
     output=sheet3_csv.replace('.csv','.pdf')
-    ps.print_sheet3(BASIN['name'],period=period,output=output,units=['km3/year','kg/ha','kg/m3'],data=sheet3_csv)
+    ps.print_sheet3(BASIN['name'],period=period,output=output,units=[str_unit,'kg/ha','kg/m3'],data=sheet3_csv)
     
 for sheet4_csv in sheet4_yearly_csvs:
     period=os.path.basename(sheet4_csv).split('.')[0].split('_')[-1]
     output=[sheet4_csv.replace('.csv','_part1.pdf'),sheet4_csv.replace('.csv','_part2.pdf')]
     ps.print_sheet4(BASIN['name'],period=period,output=output,
-                    units=['km3/year','km3/year'],data=[sheet4_csv,sheet4_csv])
+                    units=[str_unit,str_unit],data=[sheet4_csv,sheet4_csv])
     
 for sheet5_csv in sheet5_yearly_csvs:
     period=os.path.basename(sheet5_csv).split('.')[0].split('_')[-1]
     output=sheet5_csv.replace('.csv','.pdf')
     ps.print_sheet5(BASIN['name'],sb_codes=[1,2],
-                    period=period,output=output,units='km3/year',
+                    period=period,output=output,units=str_unit,
                     data=sheet5_csv)
     
 for sheet6_csv in sheet6_yearly_csvs:
     period=os.path.basename(sheet6_csv).split('.')[0].split('_')[-1]
     output=sheet6_csv.replace('.csv','.pdf')
-    ps.print_sheet6(BASIN['name'],period=period,output=output,units='km3/year',
+    ps.print_sheet6(BASIN['name'],period=period,output=output,units=str_unit,
                     data=sheet6_csv)
 
 #%% Pickle BASIN
