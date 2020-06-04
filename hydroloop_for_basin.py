@@ -267,6 +267,7 @@ for sb in BASIN['gis_data']['subbasin_mask']:
                 subbasin_in=BASIN['params']['dico_in'][sb][i]
                 df_inflow=pd.read_csv(BASIN['ts_data']['q_outflow'][subbasin_in],
                                       sep=';',index_col=0) 
+                df_inflow=df_inflow*BASIN['unit_conversion']
                 #assuming that outflow of upstream subbasin was calculated before
             if i == 0:
                 inflow=df_inflow
