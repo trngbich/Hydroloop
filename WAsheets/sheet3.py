@@ -36,7 +36,7 @@ def main(BASIN,unit_conversion=1000):
     yearly_data={}
     for key in ['et','etincr','etrain','ndm','ndm_wp']:
         quantity='volume'
-        if key=='ndm':
+        if key in ['ndm','ndm_wp']:
             quantity='depth'
         
         data[key]=cf.calc_flux_per_LU_class(

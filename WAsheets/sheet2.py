@@ -151,8 +151,8 @@ def write_sheet2_row(LAND_USE, CLASS,
     # Calculate the spatial sum of the different parameters.
     evapotranspiration =np.nansum(ET[mask])
     transpiration = np.nansum(T[mask])
-    interception = np.nansum(E[mask])
-    evaporation = np.nansum(I[mask])
+    interception = np.nansum(I[mask])
+    evaporation = np.nansum(E[mask])
     sumcheck=transpiration + interception + evaporation
     if evapotranspiration != sumcheck:
         print('ETI split difference: {0}'.format(
