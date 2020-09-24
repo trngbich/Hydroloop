@@ -149,18 +149,18 @@ e_nc,i_nc,t_nc=hl.split_ETI(et_nc=BASIN['data_cube']['monthly']['et'],
 BASIN['data_cube']['monthly']['i']=i_nc
 BASIN['data_cube']['monthly']['t']=t_nc
 BASIN['data_cube']['monthly']['e']=e_nc
-### Calculate Water Productivity
-wp_nc=hl.flow_ratio(BASIN['data_cube']['monthly']['ndm'],
-                    BASIN['data_cube']['monthly']['et'],
-                    name='dry_mass_water_productivity',
-                    attrs={
-                            'units':'0.1kg/m3',
-                            'source':'Dry-Mass Productivity (kg/ha/month) divided by \
-                            Actual evapotranspiration (mm/month)',
-                            'quantity':'Dry-Mass Water Productivity'
-                            }
-                    )
-BASIN['data_cube']['monthly']['ndm_wp']=wp_nc
+#### Calculate monthly Water Productivity per pixel
+#wp_nc=hl.flow_ratio(BASIN['data_cube']['monthly']['ndm'],
+#                    BASIN['data_cube']['monthly']['et'],
+#                    name='dry_mass_water_productivity',
+#                    attrs={
+#                            'units':'0.1kg/m3',
+#                            'source':'Dry-Mass Productivity (kg/ha/month) divided by \
+#                            Actual evapotranspiration (mm/month)',
+#                            'quantity':'Dry-Mass Water Productivity'
+#                            }
+#                    )
+#BASIN['data_cube']['monthly']['ndm_wp']=wp_nc
 ### split supply
 sw_supply_fraction_nc=hl.calc_sw_supply_fraction_by_LU(BASIN['data_cube']['monthly']['lu'],
                                                        BASIN['gis_data']['aeisw'])

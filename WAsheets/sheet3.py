@@ -7,6 +7,7 @@ Created on Fri Apr 24 17:10:28 2020
 import os
 import csv
 import numpy as np
+import pandas as pd
 from . import calculate_flux as cf
 from . import get_dictionaries as gd
 from . import hydroloop as hl
@@ -34,9 +35,9 @@ def main(BASIN,unit_conversion=1000):
     #Calulate monthly data to fill in Sheet 3    
     data={}
     yearly_data={}
-    for key in ['et','etincr','etrain','ndm','ndm_wp']:
+    for key in ['et','etincr','etrain','ndm']:
         quantity='volume'
-        if key in ['ndm','ndm_wp']:
+        if key =='ndm':
             quantity='depth'
         
         data[key]=cf.calc_flux_per_LU_class(
@@ -47,28 +48,39 @@ def main(BASIN,unit_conversion=1000):
                              '{0}_monthly'.format(key)),
                      chunksize=BASIN['chunksize'],
                      quantity=quantity)
+        #calculate et in mm
+        if key=='et':
+            data['et_depth']=cf.calc_flux_per_LU_class(
+                     BASIN['data_cube']['monthly'][key],
+                     BASIN['data_cube']['monthly']['lu'],
+                     BASIN['gis_data']['basin_mask'],
+                     output=output_file.format(
+                             '{0}_monthly'.format(key)),
+                     chunksize=BASIN['chunksize'],
+                     quantity='depth')
     
-    #calculate seasons
+    #calculate for each crop
     data_years=[]
     for crop in BASIN['params']['crops']:
        yearly_data[crop]={}
        start_dates, end_dates=hl.import_growing_seasons(
        BASIN['params']['crops'][crop][0])
-       for key in ['et','etincr','etrain','ndm','ndm_wp']:
+       #calculate seasonal and yearly from monthly ts
+       for key in ['et','etincr','etrain','ndm','et_depth']:
            ts=data[key]['{0}'.format(crop)] #get time-series of crop class
            #calculate seasonal values
            df_season=hl.calc_seasonal_value(ts,start_dates,end_dates,
-                                            output=output_file.format(
-                                                    '{0}_{1}_season'.format(
-                                                            crop,key)))
+                                                output=output_file.format(
+                                                        '{0}_{1}_season'.format(
+                                                                crop,key)))
            #aggregate by year
-           if key=='ndm_wp':
-               df=hl.aggregate_year_from_season(df_season,
-                  output=output_file.format('{0}_{1}_yearly'.format(crop,key)),
-                  hydroyear=BASIN['hydroyear'],
-                  how='mean')
-               df*=0.1 #convert 0.1kg/m3 to kg/m3
-           elif key=='ndm':
+#           if key=='ndm_wp':
+#               df=hl.aggregate_year_from_season(df_season,
+#                  output=output_file.format('{0}_{1}_yearly'.format(crop,key)),
+#                  hydroyear=BASIN['hydroyear'],
+#                  how='mean')
+#               df*=0.1 #convert 0.1kg/m3 to kg/m3
+           if key=='ndm':
                df=hl.aggregate_year_from_season(df_season,
                   output=output_file.format('{0}_{1}_yearly'.format(crop,key)),
                   hydroyear=BASIN['hydroyear'],
@@ -82,7 +94,24 @@ def main(BASIN,unit_conversion=1000):
                df/=unit_conversion  #convert TCM to volume unit
            #save data
            yearly_data[crop][key]=df
-           data_years.append(np.array(df.index)) #append data years
+           data_years.append(np.array(df.index)) #append data years 
+           
+       #calculate seasonal ndm_wp    
+       df_et=pd.read_csv(output_file.format('{0}_{1}_season'.format(crop,'et_depth')),sep=';')        
+       df_ndm=pd.read_csv(output_file.format('{0}_{1}_season'.format(crop,'ndm')),sep=';')
+       df_season['Seasonal']=df_ndm['Seasonal']/df_et['Seasonal']
+        #save seasonal ndm_wp
+       df_season.to_csv(output_file.format(                                                     
+                '{0}_{1}_season'.format(                             crop,'ndm_wp')),sep=';')
+        #aggregate yearly ndm_wp
+       df=hl.aggregate_year_from_season(df_season,
+                  output=output_file.format('{0}_{1}_yearly'.format(crop,'ndm_wp')),
+                  hydroyear=BASIN['hydroyear'],
+                  how='average') #total 0.1 kg/m3
+       df*=0.1 #convert 0.1kg/m3 to kg/m3
+       yearly_data[crop]['ndm_wp']=df
+       data_years.append(np.array(df.index))  
+
     #find common years of sheet 3
     for i in range(len(data_years)):
         if i==0:
